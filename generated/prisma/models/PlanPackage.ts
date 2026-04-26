@@ -30,12 +30,14 @@ export type PlanPackageAvgAggregateOutputType = {
   revisionsQty: number | null
   discountPct: number | null
   graceDays: number | null
+  price: runtime.Decimal | null
 }
 
 export type PlanPackageSumAggregateOutputType = {
   revisionsQty: number | null
   discountPct: number | null
   graceDays: number | null
+  price: runtime.Decimal | null
 }
 
 export type PlanPackageMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type PlanPackageMinAggregateOutputType = {
   revisionsQty: number | null
   discountPct: number | null
   graceDays: number | null
+  price: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +58,7 @@ export type PlanPackageMaxAggregateOutputType = {
   revisionsQty: number | null
   discountPct: number | null
   graceDays: number | null
+  price: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,6 +70,7 @@ export type PlanPackageCountAggregateOutputType = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -77,12 +82,14 @@ export type PlanPackageAvgAggregateInputType = {
   revisionsQty?: true
   discountPct?: true
   graceDays?: true
+  price?: true
 }
 
 export type PlanPackageSumAggregateInputType = {
   revisionsQty?: true
   discountPct?: true
   graceDays?: true
+  price?: true
 }
 
 export type PlanPackageMinAggregateInputType = {
@@ -91,6 +98,7 @@ export type PlanPackageMinAggregateInputType = {
   revisionsQty?: true
   discountPct?: true
   graceDays?: true
+  price?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -102,6 +110,7 @@ export type PlanPackageMaxAggregateInputType = {
   revisionsQty?: true
   discountPct?: true
   graceDays?: true
+  price?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -113,6 +122,7 @@ export type PlanPackageCountAggregateInputType = {
   revisionsQty?: true
   discountPct?: true
   graceDays?: true
+  price?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -211,6 +221,7 @@ export type PlanPackageGroupByOutputType = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price: runtime.Decimal
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -245,6 +256,7 @@ export type PlanPackageWhereInput = {
   revisionsQty?: Prisma.IntFilter<"PlanPackage"> | number
   discountPct?: Prisma.IntFilter<"PlanPackage"> | number
   graceDays?: Prisma.IntFilter<"PlanPackage"> | number
+  price?: Prisma.DecimalFilter<"PlanPackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"PlanPackage"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
@@ -257,6 +269,7 @@ export type PlanPackageOrderByWithRelationInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -272,6 +285,7 @@ export type PlanPackageWhereUniqueInput = Prisma.AtLeast<{
   revisionsQty?: Prisma.IntFilter<"PlanPackage"> | number
   discountPct?: Prisma.IntFilter<"PlanPackage"> | number
   graceDays?: Prisma.IntFilter<"PlanPackage"> | number
+  price?: Prisma.DecimalFilter<"PlanPackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"PlanPackage"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
@@ -284,6 +298,7 @@ export type PlanPackageOrderByWithAggregationInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -303,6 +318,7 @@ export type PlanPackageScalarWhereWithAggregatesInput = {
   revisionsQty?: Prisma.IntWithAggregatesFilter<"PlanPackage"> | number
   discountPct?: Prisma.IntWithAggregatesFilter<"PlanPackage"> | number
   graceDays?: Prisma.IntWithAggregatesFilter<"PlanPackage"> | number
+  price?: Prisma.DecimalWithAggregatesFilter<"PlanPackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolWithAggregatesFilter<"PlanPackage"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PlanPackage"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PlanPackage"> | Date | string
@@ -314,6 +330,7 @@ export type PlanPackageCreateInput = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -326,6 +343,7 @@ export type PlanPackageUncheckedCreateInput = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -338,6 +356,7 @@ export type PlanPackageUpdateInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -350,6 +369,7 @@ export type PlanPackageUncheckedUpdateInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -362,6 +382,7 @@ export type PlanPackageCreateManyInput = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -373,6 +394,7 @@ export type PlanPackageUpdateManyMutationInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -384,6 +406,7 @@ export type PlanPackageUncheckedUpdateManyInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -395,6 +418,7 @@ export type PlanPackageCountOrderByAggregateInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,6 +428,7 @@ export type PlanPackageAvgOrderByAggregateInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
 }
 
 export type PlanPackageMaxOrderByAggregateInput = {
@@ -412,6 +437,7 @@ export type PlanPackageMaxOrderByAggregateInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -423,6 +449,7 @@ export type PlanPackageMinOrderByAggregateInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -432,6 +459,7 @@ export type PlanPackageSumOrderByAggregateInput = {
   revisionsQty?: Prisma.SortOrder
   discountPct?: Prisma.SortOrder
   graceDays?: Prisma.SortOrder
+  price?: Prisma.SortOrder
 }
 
 export type PlanPackageScalarRelationFilter = {
@@ -459,6 +487,7 @@ export type PlanPackageCreateWithoutUserPlansInput = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -470,6 +499,7 @@ export type PlanPackageUncheckedCreateWithoutUserPlansInput = {
   revisionsQty: number
   discountPct: number
   graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -497,6 +527,7 @@ export type PlanPackageUpdateWithoutUserPlansInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -508,6 +539,7 @@ export type PlanPackageUncheckedUpdateWithoutUserPlansInput = {
   revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
   discountPct?: Prisma.IntFieldUpdateOperationsInput | number
   graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -550,6 +582,7 @@ export type PlanPackageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   revisionsQty?: boolean
   discountPct?: boolean
   graceDays?: boolean
+  price?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -563,6 +596,7 @@ export type PlanPackageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   revisionsQty?: boolean
   discountPct?: boolean
   graceDays?: boolean
+  price?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -574,6 +608,7 @@ export type PlanPackageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   revisionsQty?: boolean
   discountPct?: boolean
   graceDays?: boolean
+  price?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -585,12 +620,13 @@ export type PlanPackageSelectScalar = {
   revisionsQty?: boolean
   discountPct?: boolean
   graceDays?: boolean
+  price?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PlanPackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "revisionsQty" | "discountPct" | "graceDays" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["planPackage"]>
+export type PlanPackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "revisionsQty" | "discountPct" | "graceDays" | "price" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["planPackage"]>
 export type PlanPackageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   userPlans?: boolean | Prisma.PlanPackage$userPlansArgs<ExtArgs>
   _count?: boolean | Prisma.PlanPackageCountOutputTypeDefaultArgs<ExtArgs>
@@ -609,6 +645,7 @@ export type $PlanPackagePayload<ExtArgs extends runtime.Types.Extensions.Interna
     revisionsQty: number
     discountPct: number
     graceDays: number
+    price: runtime.Decimal
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1041,6 +1078,7 @@ export interface PlanPackageFieldRefs {
   readonly revisionsQty: Prisma.FieldRef<"PlanPackage", 'Int'>
   readonly discountPct: Prisma.FieldRef<"PlanPackage", 'Int'>
   readonly graceDays: Prisma.FieldRef<"PlanPackage", 'Int'>
+  readonly price: Prisma.FieldRef<"PlanPackage", 'Decimal'>
   readonly isActive: Prisma.FieldRef<"PlanPackage", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"PlanPackage", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PlanPackage", 'DateTime'>

@@ -1,7 +1,7 @@
-
 import 'dotenv/config'
 import { PrismaClient } from '../generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { hash } from 'bcryptjs'
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -10,12 +10,18 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
+  await prisma.appointment.deleteMany()
+  await prisma.userPlan.deleteMany()
+  await prisma.planPackage.deleteMany()
+  await prisma.revisionService.deleteMany()
+  await prisma.workshop.deleteMany()
+
   const workshop = await prisma.workshop.create({
     data: {
       name: 'Honda Goiânia',
       slug: 'honda-goiania',
       description: 'Concessionária Honda especializada em revisões',
-      imageUrl: 'https://via.placeholder.com/300',
+      imageUrl: 'https://picsum.photos/400/300',
       phone: '(62) 99999-9999',
       whatsapp: '5562999999999',
       address: 'Av. Exemplo, 123',
@@ -30,7 +36,7 @@ async function main() {
       slug: 'revisao-10k',
       mileageTarget: 10000,
       priceDirect: 536.06,
-      priceClub: 419.40,
+      priceClub: 419.4,
       workshopId: workshop.id,
     },
   })
@@ -73,6 +79,25 @@ async function main() {
         graceDays: 30,
       },
     ],
+  })
+
+  const hashedPassword = await hash('123456', 10)
+
+  await prisma.user.upsert({
+    where: {
+      email: 'teste@autocareclub.com',
+    },
+    update: {
+      name: 'Usuário Teste',
+      password: hashedPassword,
+      role: 'ADMIN',
+    },
+    create: {
+      name: 'Usuário Teste',
+      email: 'teste@autocareclub.com',
+      password: hashedPassword,
+      role: 'ADMIN',
+    },
   })
 
   console.log('Seed executado com sucesso!')

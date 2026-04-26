@@ -24,15 +24,23 @@ enum PaymentMode {
   CLUB
 }
 
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String?  @unique
-  password  String?
-  image     String?
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String    @id @default(cuid())
+  name             String?
+  email            String?   @unique
+  password         String?
+  image            String?
+  phone            String?
+  role             UserRole  @default(CUSTOMER)
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   appointments Appointment[]
   userPlan     UserPlan?
@@ -113,6 +121,7 @@ model PlanPackage {
   revisionsQty Int
   discountPct  Int
   graceDays    Int
+  price        Decimal  @default(0) @db.Decimal(10, 2)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

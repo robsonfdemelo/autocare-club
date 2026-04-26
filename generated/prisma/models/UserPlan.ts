@@ -635,10 +635,6 @@ export type EnumPlanStatusFieldUpdateOperationsInput = {
   set?: $Enums.PlanStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type UserPlanCreateWithoutUserInput = {
   id?: string
   status?: $Enums.PlanStatus

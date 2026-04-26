@@ -82,6 +82,9 @@ export const UserScalarFieldEnum = {
   password: 'password',
   image: 'image',
   phone: 'phone',
+  role: 'role',
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -154,6 +157,7 @@ export const PlanPackageScalarFieldEnum = {
   revisionsQty: 'revisionsQty',
   discountPct: 'discountPct',
   graceDays: 'graceDays',
+  price: 'price',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

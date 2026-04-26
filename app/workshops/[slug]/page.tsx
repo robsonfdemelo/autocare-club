@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { prisma } from '../../../lib/prisma'
 
 interface Props {
@@ -74,9 +75,12 @@ export default async function WorkshopDetails({ params }: Props) {
                 </div>
               </div>
 
-              <button className="mt-5 w-full rounded-lg bg-gray-900 px-4 py-2 text-white">
+              <Link
+                href={`/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}`}
+                className="mt-5 block w-full rounded-lg bg-gray-900 px-4 py-2 text-center text-white"
+              >
                 Agendar revisão
-              </button>
+              </Link>
             </div>
           ))}
         </div>

@@ -33,3 +33,11 @@ export const PaymentMode = {
 } as const
 
 export type PaymentMode = (typeof PaymentMode)[keyof typeof PaymentMode]
+
+
+export const UserRole = {
+  ADMIN: 'ADMIN',
+  CUSTOMER: 'CUSTOMER'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
