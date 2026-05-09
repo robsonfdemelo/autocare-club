@@ -261,6 +261,7 @@ export type PlanPackageWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   userPlans?: Prisma.UserPlanListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
 }
 
 export type PlanPackageOrderByWithRelationInput = {
@@ -274,6 +275,7 @@ export type PlanPackageOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   userPlans?: Prisma.UserPlanOrderByRelationAggregateInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
 }
 
 export type PlanPackageWhereUniqueInput = Prisma.AtLeast<{
@@ -290,6 +292,7 @@ export type PlanPackageWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PlanPackage"> | Date | string
   userPlans?: Prisma.UserPlanListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
 }, "id">
 
 export type PlanPackageOrderByWithAggregationInput = {
@@ -335,6 +338,7 @@ export type PlanPackageCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userPlans?: Prisma.UserPlanCreateNestedManyWithoutPlanPackageInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutPlanPackageInput
 }
 
 export type PlanPackageUncheckedCreateInput = {
@@ -348,6 +352,7 @@ export type PlanPackageUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   userPlans?: Prisma.UserPlanUncheckedCreateNestedManyWithoutPlanPackageInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutPlanPackageInput
 }
 
 export type PlanPackageUpdateInput = {
@@ -361,6 +366,7 @@ export type PlanPackageUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userPlans?: Prisma.UserPlanUpdateManyWithoutPlanPackageNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutPlanPackageNestedInput
 }
 
 export type PlanPackageUncheckedUpdateInput = {
@@ -374,6 +380,7 @@ export type PlanPackageUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   userPlans?: Prisma.UserPlanUncheckedUpdateManyWithoutPlanPackageNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutPlanPackageNestedInput
 }
 
 export type PlanPackageCreateManyInput = {
@@ -481,6 +488,20 @@ export type PlanPackageUpdateOneRequiredWithoutUserPlansNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PlanPackageUpdateToOneWithWhereWithoutUserPlansInput, Prisma.PlanPackageUpdateWithoutUserPlansInput>, Prisma.PlanPackageUncheckedUpdateWithoutUserPlansInput>
 }
 
+export type PlanPackageCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.PlanPackageCreateWithoutPaymentsInput, Prisma.PlanPackageUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.PlanPackageCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.PlanPackageWhereUniqueInput
+}
+
+export type PlanPackageUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.PlanPackageCreateWithoutPaymentsInput, Prisma.PlanPackageUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.PlanPackageCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.PlanPackageUpsertWithoutPaymentsInput
+  connect?: Prisma.PlanPackageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PlanPackageUpdateToOneWithWhereWithoutPaymentsInput, Prisma.PlanPackageUpdateWithoutPaymentsInput>, Prisma.PlanPackageUncheckedUpdateWithoutPaymentsInput>
+}
+
 export type PlanPackageCreateWithoutUserPlansInput = {
   id?: string
   name: string
@@ -491,6 +512,7 @@ export type PlanPackageCreateWithoutUserPlansInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentCreateNestedManyWithoutPlanPackageInput
 }
 
 export type PlanPackageUncheckedCreateWithoutUserPlansInput = {
@@ -503,6 +525,7 @@ export type PlanPackageUncheckedCreateWithoutUserPlansInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutPlanPackageInput
 }
 
 export type PlanPackageCreateOrConnectWithoutUserPlansInput = {
@@ -531,6 +554,7 @@ export type PlanPackageUpdateWithoutUserPlansInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUpdateManyWithoutPlanPackageNestedInput
 }
 
 export type PlanPackageUncheckedUpdateWithoutUserPlansInput = {
@@ -543,6 +567,75 @@ export type PlanPackageUncheckedUpdateWithoutUserPlansInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutPlanPackageNestedInput
+}
+
+export type PlanPackageCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  revisionsQty: number
+  discountPct: number
+  graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userPlans?: Prisma.UserPlanCreateNestedManyWithoutPlanPackageInput
+}
+
+export type PlanPackageUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  revisionsQty: number
+  discountPct: number
+  graceDays: number
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userPlans?: Prisma.UserPlanUncheckedCreateNestedManyWithoutPlanPackageInput
+}
+
+export type PlanPackageCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.PlanPackageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PlanPackageCreateWithoutPaymentsInput, Prisma.PlanPackageUncheckedCreateWithoutPaymentsInput>
+}
+
+export type PlanPackageUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.PlanPackageUpdateWithoutPaymentsInput, Prisma.PlanPackageUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.PlanPackageCreateWithoutPaymentsInput, Prisma.PlanPackageUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.PlanPackageWhereInput
+}
+
+export type PlanPackageUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.PlanPackageWhereInput
+  data: Prisma.XOR<Prisma.PlanPackageUpdateWithoutPaymentsInput, Prisma.PlanPackageUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type PlanPackageUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  discountPct?: Prisma.IntFieldUpdateOperationsInput | number
+  graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userPlans?: Prisma.UserPlanUpdateManyWithoutPlanPackageNestedInput
+}
+
+export type PlanPackageUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  revisionsQty?: Prisma.IntFieldUpdateOperationsInput | number
+  discountPct?: Prisma.IntFieldUpdateOperationsInput | number
+  graceDays?: Prisma.IntFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userPlans?: Prisma.UserPlanUncheckedUpdateManyWithoutPlanPackageNestedInput
 }
 
 
@@ -552,10 +645,12 @@ export type PlanPackageUncheckedUpdateWithoutUserPlansInput = {
 
 export type PlanPackageCountOutputType = {
   userPlans: number
+  payments: number
 }
 
 export type PlanPackageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   userPlans?: boolean | PlanPackageCountOutputTypeCountUserPlansArgs
+  payments?: boolean | PlanPackageCountOutputTypeCountPaymentsArgs
 }
 
 /**
@@ -575,6 +670,13 @@ export type PlanPackageCountOutputTypeCountUserPlansArgs<ExtArgs extends runtime
   where?: Prisma.UserPlanWhereInput
 }
 
+/**
+ * PlanPackageCountOutputType without action
+ */
+export type PlanPackageCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
 
 export type PlanPackageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -587,6 +689,7 @@ export type PlanPackageSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdAt?: boolean
   updatedAt?: boolean
   userPlans?: boolean | Prisma.PlanPackage$userPlansArgs<ExtArgs>
+  payments?: boolean | Prisma.PlanPackage$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.PlanPackageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["planPackage"]>
 
@@ -629,6 +732,7 @@ export type PlanPackageSelectScalar = {
 export type PlanPackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "revisionsQty" | "discountPct" | "graceDays" | "price" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["planPackage"]>
 export type PlanPackageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   userPlans?: boolean | Prisma.PlanPackage$userPlansArgs<ExtArgs>
+  payments?: boolean | Prisma.PlanPackage$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.PlanPackageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PlanPackageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -638,6 +742,7 @@ export type $PlanPackagePayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "PlanPackage"
   objects: {
     userPlans: Prisma.$UserPlanPayload<ExtArgs>[]
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1044,6 +1149,7 @@ readonly fields: PlanPackageFieldRefs;
 export interface Prisma__PlanPackageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   userPlans<T extends Prisma.PlanPackage$userPlansArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanPackage$userPlansArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPlanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.PlanPackage$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanPackage$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1496,6 +1602,30 @@ export type PlanPackage$userPlansArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.UserPlanScalarFieldEnum | Prisma.UserPlanScalarFieldEnum[]
+}
+
+/**
+ * PlanPackage.payments
+ */
+export type PlanPackage$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
 }
 
 /**

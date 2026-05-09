@@ -44,6 +44,7 @@ model User {
 
   appointments Appointment[]
   userPlan     UserPlan?
+  payments     Payment[]
 }
 
 model Workshop {
@@ -127,6 +128,7 @@ model PlanPackage {
   updatedAt    DateTime @updatedAt
 
   userPlans UserPlan[]
+  payments  Payment[]
 }
 
 model UserPlan {
@@ -148,4 +150,20 @@ model UserPlan {
   appointments Appointment[]
 
   @@index([planPackageId])
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  userId         String
+  planPackageId  String
+  asaasPaymentId String   @unique
+  status         String
+  value          Decimal  @db.Decimal(10, 2)
+  invoiceUrl     String?
+  billingType    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user        User        @relation(fields: [userId], references: [id])
+  planPackage PlanPackage @relation(fields: [planPackageId], references: [id])
 }

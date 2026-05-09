@@ -56,7 +56,8 @@ export const ModelName = {
   RevisionService: 'RevisionService',
   Appointment: 'Appointment',
   PlanPackage: 'PlanPackage',
-  UserPlan: 'UserPlan'
+  UserPlan: 'UserPlan',
+  Payment: 'Payment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -182,6 +183,22 @@ export const UserPlanScalarFieldEnum = {
 } as const
 
 export type UserPlanScalarFieldEnum = (typeof UserPlanScalarFieldEnum)[keyof typeof UserPlanScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planPackageId: 'planPackageId',
+  asaasPaymentId: 'asaasPaymentId',
+  status: 'status',
+  value: 'value',
+  invoiceUrl: 'invoiceUrl',
+  billingType: 'billingType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const SortOrder = {

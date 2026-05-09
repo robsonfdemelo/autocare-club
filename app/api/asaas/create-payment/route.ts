@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
 
 export async function POST(req: Request) {
   const apiKey = process.env.ASAAS_API_KEY;
   const baseUrl = process.env.ASAAS_BASE_URL;
-
-  console.log("ASAAS_API_KEY existe:", Boolean(apiKey));
-  console.log("ASAAS_BASE_URL:", baseUrl);
 
   if (!apiKey || !baseUrl) {
     return NextResponse.json(
@@ -14,8 +14,37 @@ export async function POST(req: Request) {
     );
   }
 
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { error: "Usuário não autenticado" },
+      { status: 401 },
+    );
+  }
+
   const body = await req.json();
-  const { name, email, cpf, value } = body;
+  const { name, email, cpf, value, planId } = body;
+
+  if (!name || !email || !cpf || !value || !planId) {
+    return NextResponse.json(
+      { error: "Dados obrigatórios não enviados" },
+      { status: 400 },
+    );
+  }
+
+  const plan = await prisma.planPackage.findUnique({
+    where: {
+      id: planId,
+    },
+  });
+
+  if (!plan || !plan.isActive) {
+    return NextResponse.json(
+      { error: "Plano inválido ou inativo" },
+      { status: 400 },
+    );
+  }
 
   const headers = {
     "Content-Type": "application/json",
@@ -46,6 +75,8 @@ export async function POST(req: Request) {
       billingType: "PIX",
       value,
       dueDate: new Date().toISOString().split("T")[0],
+      description: `Assinatura ${plan.name}`,
+      externalReference: `${session.user.id}:${plan.id}`,
     }),
   });
 
@@ -54,6 +85,18 @@ export async function POST(req: Request) {
   if (!paymentRes.ok) {
     return NextResponse.json(payment, { status: paymentRes.status });
   }
+
+  await prisma.payment.create({
+    data: {
+      userId: session.user.id,
+      planPackageId: plan.id,
+      asaasPaymentId: payment.id,
+      status: payment.status ?? "PENDING",
+      value: Number(payment.value ?? value),
+      invoiceUrl: payment.invoiceUrl ?? null,
+      billingType: payment.billingType ?? "PIX",
+    },
+  });
 
   return NextResponse.json(payment);
 }

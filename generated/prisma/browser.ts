@@ -47,3 +47,8 @@ export type PlanPackage = Prisma.PlanPackageModel
  * 
  */
 export type UserPlan = Prisma.UserPlanModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
