@@ -107,8 +107,16 @@ export default async function MyPlanPage() {
                 {userPlan.planPackage.name}
               </h2>
               <p className="mt-2 text-gray-600">
-                Status:{" "}
-                <span className="font-semibold">
+                : Status:{" "}
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-bold ${
+                    userPlan.status === "ACTIVE"
+                      ? "bg-green-100 text-green-700"
+                      : userPlan.status === "CANCELED"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                  }`}
+                >
                   {userPlan.status === "ACTIVE"
                     ? "Ativo"
                     : userPlan.status === "CANCELED"

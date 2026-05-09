@@ -1,23 +1,23 @@
-import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../../lib/auth'
-import { prisma } from '../../lib/prisma'
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../lib/auth";
+import { prisma } from "../../lib/prisma";
 
 interface Props {
   searchParams: Promise<{
-    workshopSlug?: string
-    serviceId?: string
-    error?: string
-  }>
+    workshopSlug?: string;
+    serviceId?: string;
+    error?: string;
+  }>;
 }
 
 export default async function BookingPage({ searchParams }: Props) {
-  const { workshopSlug, serviceId, error } = await searchParams
+  const { workshopSlug, serviceId, error } = await searchParams;
 
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    redirect('/login')
+    redirect("/login");
   }
 
   if (!workshopSlug || !serviceId) {
@@ -25,21 +25,19 @@ export default async function BookingPage({ searchParams }: Props) {
       <main className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow-sm">
           <h1 className="text-2xl font-bold">Agendamento</h1>
-          <p className="mt-2 text-gray-600">
-            Dados da revisão não informados.
-          </p>
+          <p className="mt-2 text-gray-600">Dados da revisão não informados.</p>
         </div>
       </main>
-    )
+    );
   }
 
   const workshop = await prisma.workshop.findUnique({
     where: { slug: workshopSlug },
-  })
+  });
 
   const service = await prisma.revisionService.findUnique({
     where: { id: serviceId },
-  })
+  });
 
   if (!workshop || !service) {
     return (
@@ -51,111 +49,98 @@ export default async function BookingPage({ searchParams }: Props) {
           </p>
         </div>
       </main>
-    )
+    );
   }
 
   async function createAppointment(formData: FormData) {
-    'use server'
+    "use server";
 
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      redirect('/login')
+      redirect("/login");
     }
 
     if (!workshop || !service) {
-      throw new Error('Dados inválidos')
+      throw new Error("Dados inválidos");
     }
 
-    const appointmentDate = formData.get('appointmentDate') as string
-    const paymentMode = formData.get('paymentMode') as 'DIRECT' | 'CLUB'
-    const notes = (formData.get('notes') as string) || ''
+    const appointmentDate = formData.get("appointmentDate") as string;
+    const paymentMode = formData.get("paymentMode") as "DIRECT" | "CLUB";
+    const notes = (formData.get("notes") as string) || "";
 
     if (!appointmentDate) {
       redirect(
-        `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=data-obrigatoria`
-      )
+        `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=data-obrigatoria`,
+      );
     }
 
-    const selectedDate = new Date(`${appointmentDate}T00:00:00`)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    const selectedDate = new Date(`${appointmentDate}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     if (selectedDate < today) {
       redirect(
-        `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=data-passada`
-      )
+        `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=data-passada`,
+      );
     }
 
-    if (paymentMode === 'CLUB') {
+    if (paymentMode === "CLUB") {
       const userPlan = await prisma.userPlan.findUnique({
         where: {
           userId: session.user.id,
         },
-      })
+      });
 
-      if (!userPlan || userPlan.status !== 'ACTIVE') {
+      if (!userPlan || userPlan.status !== "ACTIVE") {
         redirect(
-          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=plano-inexistente`
-        )
+          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=plano-inexistente`,
+        );
       }
 
       if (userPlan.availableBalance <= 0) {
         redirect(
-          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=saldo-insuficiente`
-        )
+          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=saldo-insuficiente`,
+        );
       }
 
-      const graceUntil = new Date(userPlan.graceUntil)
-      graceUntil.setHours(0, 0, 0, 0)
+      const graceUntil = new Date(userPlan.graceUntil);
+      graceUntil.setHours(0, 0, 0, 0);
 
       if (today < graceUntil) {
         redirect(
-          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=carencia-ativa`
-        )
+          `/booking?workshopSlug=${workshop.slug}&serviceId=${service.id}&error=carencia-ativa`,
+        );
       }
 
-      await prisma.$transaction([
-        prisma.appointment.create({
-          data: {
-            appointmentDate: selectedDate,
-            paymentMode,
-            usedPlan: true,
-            notes,
-            userId: session.user.id,
-            workshopId: workshop.id,
-            revisionServiceId: service.id,
-            userPlanId: userPlan.id,
-          },
-        }),
-        prisma.userPlan.update({
-          where: {
-            id: userPlan.id,
-          },
-          data: {
-            usedRevisions: {
-              increment: 1,
-            },
-            availableBalance: {
-              decrement: 1,
-            },
-          },
-        }),
-      ])
-    } else {
       await prisma.appointment.create({
         data: {
           appointmentDate: selectedDate,
           paymentMode,
+          usedPlan: true,
           notes,
           userId: session.user.id,
           workshopId: workshop.id,
           revisionServiceId: service.id,
+          userPlanId: userPlan.id,
         },
-      })
+      });
+    } else {
+      await prisma.appointment.create({
+        data: {
+          appointmentDate: selectedDate,
+          paymentMode: "DIRECT",
+          usedPlan: false,
+          notes,
+          userId: session.user.id,
+          workshopId: workshop.id,
+          revisionServiceId: service.id,
+          userPlanId: null,
+        },
+      });
     }
 
-    redirect('/appointments?success=booking-created')
+    redirect("/appointments?success=booking-created");
   }
 
   const userPlan = await prisma.userPlan.findUnique({
@@ -165,46 +150,47 @@ export default async function BookingPage({ searchParams }: Props) {
     include: {
       planPackage: true,
     },
-  })
+  });
 
-  const todayMin = new Date().toISOString().split('T')[0]
+  const todayMin = new Date().toISOString().split("T")[0];
 
-  const currentDate = new Date()
-  currentDate.setHours(0, 0, 0, 0)
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
 
-  const graceUntilDate = userPlan ? new Date(userPlan.graceUntil) : null
+  const graceUntilDate = userPlan ? new Date(userPlan.graceUntil) : null;
+
   if (graceUntilDate) {
-    graceUntilDate.setHours(0, 0, 0, 0)
+    graceUntilDate.setHours(0, 0, 0, 0);
   }
 
-  const hasActivePlan = !!userPlan && userPlan.status === 'ACTIVE'
-  const hasBalance = !!userPlan && userPlan.availableBalance > 0
-  const graceExpired = !!graceUntilDate && currentDate >= graceUntilDate
+  const hasActivePlan = !!userPlan && userPlan.status === "ACTIVE";
+  const hasBalance = !!userPlan && userPlan.availableBalance > 0;
+  const graceExpired = !!graceUntilDate && currentDate >= graceUntilDate;
 
-  const canUseClub = hasActivePlan && hasBalance && graceExpired
+  const canUseClub = hasActivePlan && hasBalance && graceExpired;
 
-  let clubMessage = ''
+  let clubMessage = "";
 
-  if (!userPlan || userPlan.status !== 'ACTIVE') {
-    clubMessage = 'Você não possui um plano ativo.'
+  if (!userPlan || userPlan.status !== "ACTIVE") {
+    clubMessage = "Você não possui um plano ativo.";
   } else if (userPlan.availableBalance <= 0) {
-    clubMessage = 'Seu plano não possui saldo disponível.'
+    clubMessage = "Seu plano não possui saldo disponível.";
   } else if (graceUntilDate && currentDate < graceUntilDate) {
-    clubMessage = `Seu plano está em carência até ${graceUntilDate.toLocaleDateString('pt-BR')}.`
+    clubMessage = `Seu plano está em carência até ${graceUntilDate.toLocaleDateString("pt-BR")}.`;
   }
 
   const errorMessage =
-    error === 'data-passada'
-      ? 'Não é permitido agendar uma data passada.'
-      : error === 'data-obrigatoria'
-      ? 'Informe a data da revisão.'
-      : error === 'plano-inexistente'
-      ? 'Você não possui um plano ativo para usar o AutoCare Club.'
-      : error === 'saldo-insuficiente'
-      ? 'Seu plano não possui saldo disponível.'
-      : error === 'carencia-ativa'
-      ? 'Seu plano ainda está em período de carência.'
-      : ''
+    error === "data-passada"
+      ? "Não é permitido agendar uma data passada."
+      : error === "data-obrigatoria"
+        ? "Informe a data da revisão."
+        : error === "plano-inexistente"
+          ? "Você não possui um plano ativo para usar o AutoCare Club."
+          : error === "saldo-insuficiente"
+            ? "Seu plano não possui saldo disponível."
+            : error === "carencia-ativa"
+              ? "Seu plano ainda está em período de carência."
+              : "";
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -238,7 +224,8 @@ export default async function BookingPage({ searchParams }: Props) {
                 {service.name}
               </p>
               <p className="text-sm text-gray-600">
-                {service.mileageTarget.toLocaleString('pt-BR')} km ou {service.monthInterval} meses
+                {service.mileageTarget.toLocaleString("pt-BR")} km ou{" "}
+                {service.monthInterval} meses
               </p>
             </div>
           </div>
@@ -247,20 +234,21 @@ export default async function BookingPage({ searchParams }: Props) {
             <div className="rounded-xl border border-gray-200 p-4">
               <p className="text-sm text-gray-500">Preço direto</p>
               <p className="text-2xl font-bold text-gray-900">
-                R$ {Number(service.priceDirect).toFixed(2).replace('.', ',')}
+                R$ {Number(service.priceDirect).toFixed(2).replace(".", ",")}
               </p>
             </div>
 
             <div className="rounded-xl bg-[#B11226] p-4 text-white">
               <p className="text-sm text-white/80">Preço AutoCare Club</p>
               <p className="text-2xl font-bold">
-                R$ {Number(service.priceClub).toFixed(2).replace('.', ',')}
+                R$ {Number(service.priceClub).toFixed(2).replace(".", ",")}
               </p>
             </div>
           </div>
 
           <div className="mt-6 rounded-xl bg-gray-50 p-4">
             <p className="text-sm text-gray-500">Seu plano atual</p>
+
             {userPlan ? (
               <div className="mt-2 space-y-1">
                 <p className="font-semibold text-gray-900">
@@ -270,7 +258,8 @@ export default async function BookingPage({ searchParams }: Props) {
                   Saldo disponível: {userPlan.availableBalance}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Carência até: {new Date(userPlan.graceUntil).toLocaleDateString('pt-BR')}
+                  Carência até:{" "}
+                  {new Date(userPlan.graceUntil).toLocaleDateString("pt-BR")}
                 </p>
               </div>
             ) : (
@@ -311,7 +300,7 @@ export default async function BookingPage({ searchParams }: Props) {
               >
                 <option value="DIRECT">Direto</option>
                 <option value="CLUB" disabled={!canUseClub}>
-                  AutoCare Club {!canUseClub ? '(indisponível)' : ''}
+                  AutoCare Club {!canUseClub ? "(indisponível)" : ""}
                 </option>
               </select>
             </div>
@@ -329,9 +318,7 @@ export default async function BookingPage({ searchParams }: Props) {
             </div>
 
             {errorMessage ? (
-              <p className="text-sm font-medium text-red-600">
-                {errorMessage}
-              </p>
+              <p className="text-sm font-medium text-red-600">{errorMessage}</p>
             ) : null}
 
             <button
@@ -344,5 +331,5 @@ export default async function BookingPage({ searchParams }: Props) {
         </div>
       </section>
     </main>
-  )
+  );
 }

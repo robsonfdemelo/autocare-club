@@ -53,6 +53,7 @@ export default async function PlansPage() {
                   <p>Carência de {plan.graceDays} dias</p>
                 </div>
                 <CheckoutButton
+                  planId={plan.id}
                   name="Robson Ferreira"
                   email="robson.ferreiramelo@gmail.com"
                   value={Number(plan.price)}
