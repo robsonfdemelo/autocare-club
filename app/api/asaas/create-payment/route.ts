@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   if (!apiKey || !baseUrl) {
     return NextResponse.json(
-      { error: "ASAAS_API_KEY ou ASAAS_BASE_URL não configurado no .env" },
+      { error: "ASAAS_API_KEY ou ASAAS_BASE_URL não configurado." },
       { status: 500 },
     );
   }
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
   if (!session?.user?.id) {
     return NextResponse.json(
-      { error: "Usuário não autenticado" },
+      { error: "Usuário não autenticado." },
       { status: 401 },
     );
   }
@@ -28,20 +28,18 @@ export async function POST(req: Request) {
 
   if (!name || !email || !cpf || !value || !planId) {
     return NextResponse.json(
-      { error: "Dados obrigatórios não enviados" },
+      { error: "Dados obrigatórios não enviados." },
       { status: 400 },
     );
   }
 
   const plan = await prisma.planPackage.findUnique({
-    where: {
-      id: planId,
-    },
+    where: { id: planId },
   });
 
   if (!plan || !plan.isActive) {
     return NextResponse.json(
-      { error: "Plano inválido ou inativo" },
+      { error: "Plano inválido ou inativo." },
       { status: 400 },
     );
   }
@@ -75,7 +73,7 @@ export async function POST(req: Request) {
       billingType: "PIX",
       value,
       dueDate: new Date().toISOString().split("T")[0],
-      description: `Assinatura ${plan.name}`,
+      description: `Plano ${plan.name}`,
       externalReference: `${session.user.id}:${plan.id}`,
     }),
   });

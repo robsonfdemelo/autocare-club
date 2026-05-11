@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 
+type CheckoutButtonProps = {
+  planId: string;
+  name: string;
+  email: string;
+  value: number;
+};
+
 export default function CheckoutButton({
   planId,
   name,
   email,
   value,
-}: {
-  planId: string;
-  name: string;
-  email: string;
-  value: number;
-}) {
+}: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 

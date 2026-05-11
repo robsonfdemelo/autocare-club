@@ -167,7 +167,7 @@ export default async function AdminAppointmentsPage() {
                         }`}
                       >
                         {appointment.paymentMode === 'CLUB'
-                          ? 'AutoCare Club'
+                          ? 'myRiseCare'
                           : 'Direto'}
                       </span>
 
