@@ -9,12 +9,20 @@ export default async function Header() {
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-bold text-[#B11226]">
-          myRiseCare
-        </Link>
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="text-lg font-bold text-[#B11226]">
+            myRiseCare
+          </Link>
 
-        <nav className="flex items-center gap-4 text-sm text-gray-700">
+          {session?.user ? (
+            <div className="md:hidden">
+              <LogoutButton />
+            </div>
+          ) : null}
+        </div>
+
+        <nav className="flex max-w-full flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-700 md:justify-end">
           <Link href="/" className="hover:text-[#B11226]">
             Home
           </Link>
@@ -30,15 +38,15 @@ export default async function Header() {
           {session?.user ? (
             <>
               <Link href="/appointments" className="hover:text-[#B11226]">
-                Meus agendamentos
+                Agendamentos
               </Link>
 
               <Link href="/vehicles" className="hover:text-[#B11226]">
-                Meus veículos
+                Veículos
               </Link>
 
               <Link href="/my-plan" className="hover:text-[#B11226]">
-                Meu plano
+                Plano
               </Link>
 
               {session.user.role === "ADMIN" ? (
@@ -48,14 +56,16 @@ export default async function Header() {
               ) : null}
 
               <Link href="/profile" className="hover:text-[#B11226]">
-                Meu perfil
+                Perfil
               </Link>
 
-              <span className="text-gray-600">
+              <span className="hidden text-gray-600 lg:inline">
                 Olá, {session.user.name ?? session.user.email}
               </span>
 
-              <LogoutButton />
+              <div className="hidden md:block">
+                <LogoutButton />
+              </div>
             </>
           ) : (
             <Link href="/login" className="hover:text-[#B11226]">
