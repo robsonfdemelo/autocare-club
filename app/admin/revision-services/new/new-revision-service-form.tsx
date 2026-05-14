@@ -2,76 +2,127 @@
 
 import Link from "next/link";
 
+type WorkshopOption = {
+  id: string;
+  name: string;
+};
+
+type NewRevisionServiceFormProps = {
+  createRevisionService: (formData: FormData) => Promise<void>;
+  workshops: WorkshopOption[];
+};
+
 export default function NewRevisionServiceForm({
   createRevisionService,
   workshops,
-}: any) {
+}: NewRevisionServiceFormProps) {
   return (
-    <form action={createRevisionService} className="grid gap-4 md:grid-cols-2">
-      
-      <input
-        name="name"
-        placeholder="Nome da revisão (ex: Revisão 10.000 km)"
-        required
-        className="rounded-lg border px-3 py-2"
-      />
+    <form action={createRevisionService} className="space-y-4 rounded-2xl bg-white p-6 shadow-sm">
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Nome da revisão
+        </label>
 
-      <select
-        name="workshopId"
-        required
-        className="rounded-lg border px-3 py-2"
-      >
-        <option value="">Selecione a oficina</option>
-        {workshops.map((w: any) => (
-          <option key={w.id} value={w.id}>
-            {w.name}
+        <input
+          name="name"
+          placeholder="Ex: Revisão 10.000 km"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Oficina
+        </label>
+
+        <select
+          name="workshopId"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+          defaultValue=""
+        >
+          <option value="" disabled>
+            Selecione a oficina
           </option>
-        ))}
-      </select>
 
-      <input
-        name="mileageTarget"
-        placeholder="KM (ex: 10000)"
-        type="number"
-        required
-        className="rounded-lg border px-3 py-2"
-      />
+          {workshops.map((workshop) => (
+            <option key={workshop.id} value={workshop.id}>
+              {workshop.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <input
-        name="monthInterval"
-        placeholder="Meses (ex: 12)"
-        type="number"
-        className="rounded-lg border px-3 py-2"
-      />
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Quilometragem
+        </label>
 
-      <input
-        name="priceDirect"
-        placeholder="Preço direto (ex: 650)"
-        type="number"
-        step="0.01"
-        required
-        className="rounded-lg border px-3 py-2"
-      />
+        <input
+          name="mileageTarget"
+          type="number"
+          placeholder="Ex: 10000"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
 
-      <input
-        name="priceClub"
-        placeholder="Preço clube (ex: 520)"
-        type="number"
-        step="0.01"
-        className="rounded-lg border px-3 py-2"
-      />
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Intervalo em meses
+        </label>
 
-      <div className="flex gap-3 md:col-span-2">
+        <input
+          name="monthInterval"
+          type="number"
+          placeholder="Ex: 12"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Preço direto
+        </label>
+
+        <input
+          name="priceDirect"
+          type="number"
+          step="0.01"
+          placeholder="Ex: 536.06"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-semibold text-gray-700">
+          Preço AutoCare Club
+        </label>
+
+        <input
+          name="priceClub"
+          type="number"
+          step="0.01"
+          placeholder="Ex: 419.40"
+          required
+          className="w-full rounded-lg border border-gray-300 px-3 py-2"
+        />
+      </div>
+
+      <div className="flex gap-3">
         <button
           type="submit"
-          className="rounded-lg bg-gray-900 px-5 py-3 text-white"
+          className="rounded-lg bg-gray-900 px-5 py-3 font-semibold text-white"
         >
           Salvar revisão
         </button>
 
         <Link
           href="/admin/revision-services"
-          className="border px-5 py-3 rounded-lg"
+          className="rounded-lg border border-gray-300 px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-100"
         >
           Voltar
         </Link>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "../../../../lib/auth";
 import { prisma } from "../../../../lib/prisma";
 
@@ -24,22 +25,51 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { name, email, cpf, value, planId } = body;
+  const planId = body.planId as string | undefined;
+  const cpf = String(body.cpf ?? "").replace(/\D/g, "");
 
-  if (!name || !email || !cpf || !value || !planId) {
+  if (!planId || !cpf) {
     return NextResponse.json(
-      { error: "Dados obrigatórios não enviados." },
+      { error: "Plano e CPF são obrigatórios." },
       { status: 400 },
     );
   }
 
-  const plan = await prisma.planPackage.findUnique({
-    where: { id: planId },
-  });
+  if (cpf.length !== 11 && cpf.length !== 14) {
+    return NextResponse.json(
+      { error: "CPF/CNPJ inválido." },
+      { status: 400 },
+    );
+  }
+
+  const [plan, user] = await Promise.all([
+    prisma.planPackage.findUnique({
+      where: { id: planId },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+    }),
+  ]);
 
   if (!plan || !plan.isActive) {
     return NextResponse.json(
       { error: "Plano inválido ou inativo." },
+      { status: 400 },
+    );
+  }
+
+  if (!user?.email) {
+    return NextResponse.json(
+      { error: "Usuário sem e-mail cadastrado." },
+      { status: 400 },
+    );
+  }
+
+  const value = Number(plan.price);
+
+  if (!value || value <= 0) {
+    return NextResponse.json(
+      { error: "Plano sem valor válido configurado." },
       { status: 400 },
     );
   }
@@ -53,8 +83,8 @@ export async function POST(req: Request) {
     method: "POST",
     headers,
     body: JSON.stringify({
-      name,
-      email,
+      name: user.name ?? user.email,
+      email: user.email,
       cpfCnpj: cpf,
     }),
   });

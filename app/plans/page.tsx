@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 import CheckoutButton from "./checkout-button";
 
 export default async function PlansPage() {
+  const session = await getServerSession(authOptions);
+
   const plans = await prisma.planPackage.findMany({
     where: {
       isActive: true,
@@ -16,7 +21,8 @@ export default async function PlansPage() {
     <main className="min-h-screen bg-gray-50">
       <section className="bg-[#B11226] px-6 py-12 text-white">
         <div className="mx-auto max-w-6xl">
-          <h1 className="text-4xl font-bold">Planos AutoCare Club</h1>
+          <h1 className="text-4xl font-bold">Planos myRiseCare</h1>
+
           <p className="mt-2 text-white/90">
             Escolha um plano e economize nas suas revisões
           </p>
@@ -26,7 +32,9 @@ export default async function PlansPage() {
       <section className="mx-auto max-w-6xl px-6 py-10">
         {plans.length === 0 ? (
           <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <p className="text-gray-600">Nenhum plano disponível no momento.</p>
+            <p className="text-gray-600">
+              Nenhum plano disponível no momento.
+            </p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -52,12 +60,20 @@ export default async function PlansPage() {
                   <p>{plan.discountPct}% de desconto</p>
                   <p>Carência de {plan.graceDays} dias</p>
                 </div>
-                <CheckoutButton
-                  planId={plan.id}
-                  name="Robson Ferreira"
-                  email="robson.ferreiramelo@gmail.com"
-                  value={Number(plan.price)}
-                />
+
+                {session?.user?.id ? (
+                  <CheckoutButton
+                    planId={plan.id}
+                    value={Number(plan.price)}
+                  />
+                ) : (
+                  <Link
+                    href="/login"
+                    className="mt-6 block w-full rounded-lg bg-gray-900 px-4 py-3 text-center font-semibold text-white transition hover:bg-gray-800"
+                  >
+                    Entrar para contratar
+                  </Link>
+                )}
               </article>
             ))}
           </div>

@@ -1,18 +1,20 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
 
 interface Props {
   searchParams: Promise<{
     success?: string;
+    error?: string;
     status?: string;
   }>;
 }
 
-export default async function AppointmentsPage({ searchParams }: Props) {
-  const { success, status } = await searchParams;
+async function cancelAppointment(formData: FormData) {
+  "use server";
 
   const session = await getServerSession(authOptions);
 
@@ -20,83 +22,54 @@ export default async function AppointmentsPage({ searchParams }: Props) {
     redirect("/login");
   }
 
-  async function cancelAppointment(formData: FormData) {
-    "use server";
+  const appointmentId = formData.get("appointmentId") as string;
 
-    const session = await getServerSession(authOptions);
+  if (!appointmentId) {
+    redirect("/appointments");
+  }
 
-    if (!session?.user?.id) {
-      redirect("/login");
-    }
+  const appointment = await prisma.appointment.findFirst({
+    where: {
+      id: appointmentId,
+      userId: session.user.id,
+    },
+  });
 
-    const appointmentId = formData.get("appointmentId") as string;
+  if (!appointment) {
+    redirect("/appointments");
+  }
 
-    if (!appointmentId) {
-      return;
-    }
+  if (appointment.status !== "SCHEDULED") {
+    redirect("/appointments?error=booking-cannot-cancel");
+  }
 
-    const appointment = await prisma.appointment.findFirst({
-      where: {
-        id: appointmentId,
-        userId: session.user.id,
-      },
-      include: {
-        userPlan: true,
-      },
-    });
+  await prisma.appointment.update({
+    where: {
+      id: appointment.id,
+    },
+    data: {
+      status: "CANCELED",
+    },
+  });
 
-    if (!appointment) {
-      redirect("/appointments");
-    }
+  redirect("/appointments?success=booking-canceled");
+}
 
-    if (appointment.status === "CANCELED") {
-      redirect("/appointments");
-    }
+export default async function AppointmentsPage({ searchParams }: Props) {
+  const { success, error, status } = await searchParams;
 
-    if (
-      appointment.usedPlan &&
-      appointment.userPlanId &&
-      appointment.status === "COMPLETED"
-    ) {
-      await prisma.$transaction([
-        prisma.appointment.update({
-          where: {
-            id: appointment.id,
-          },
-          data: {
-            status: "CANCELED",
-          },
-        }),
-        prisma.userPlan.update({
-          where: {
-            id: appointment.userPlanId,
-          },
-          data: {
-            usedRevisions: {
-              decrement: 1,
-            },
-            availableBalance: {
-              increment: 1,
-            },
-          },
-        }),
-      ]);
-    } else {
-      await prisma.appointment.update({
-        where: {
-          id: appointment.id,
-        },
-        data: {
-          status: "CANCELED",
-        },
-      });
-    }
+  const session = await getServerSession(authOptions);
 
-    redirect("/appointments?success=booking-canceled");
+  if (!session?.user?.id) {
+    redirect("/login");
   }
 
   const normalizedStatus =
-    status === "SCHEDULED" || status === "CANCELED" ? status : undefined;
+    status === "SCHEDULED" ||
+    status === "COMPLETED" ||
+    status === "CANCELED"
+      ? status
+      : undefined;
 
   const appointments = await prisma.appointment.findMany({
     where: {
@@ -125,11 +98,17 @@ export default async function AppointmentsPage({ searchParams }: Props) {
         ? "Agendamento cancelado com sucesso."
         : "";
 
+  const errorMessage =
+    error === "booking-cannot-cancel"
+      ? "Não é possível cancelar uma revisão já concluída ou cancelada."
+      : "";
+
   return (
     <main className="min-h-screen bg-gray-50">
       <section className="bg-[#B11226] px-6 py-12 text-white">
         <div className="mx-auto max-w-5xl">
           <h1 className="text-4xl font-bold">Meus agendamentos</h1>
+
           <p className="mt-2 text-white/90">
             Acompanhe as revisões agendadas no AutoCare Club
           </p>
@@ -140,6 +119,12 @@ export default async function AppointmentsPage({ searchParams }: Props) {
         {successMessage ? (
           <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-800 shadow-sm">
             <p className="font-medium">{successMessage}</p>
+          </div>
+        ) : null}
+
+        {errorMessage ? (
+          <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800 shadow-sm">
+            <p className="font-medium">{errorMessage}</p>
           </div>
         ) : null}
 
@@ -164,6 +149,17 @@ export default async function AppointmentsPage({ searchParams }: Props) {
             }`}
           >
             Agendados
+          </Link>
+
+          <Link
+            href="/appointments?status=COMPLETED"
+            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+              normalizedStatus === "COMPLETED"
+                ? "bg-gray-900 text-white"
+                : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            Concluídos
           </Link>
 
           <Link
@@ -230,14 +226,18 @@ export default async function AppointmentsPage({ searchParams }: Props) {
                       className={`rounded-full px-3 py-1 text-sm font-semibold ${
                         appointment.status === "CANCELED"
                           ? "bg-red-100 text-red-700"
-                          : "bg-[#B11226]/10 text-[#B11226]"
+                          : appointment.status === "COMPLETED"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-[#B11226]/10 text-[#B11226]"
                       }`}
                     >
                       {appointment.status === "SCHEDULED"
                         ? "Agendado"
-                        : appointment.status === "CANCELED"
-                          ? "Cancelado"
-                          : appointment.status}
+                        : appointment.status === "COMPLETED"
+                          ? "Concluído"
+                          : appointment.status === "CANCELED"
+                            ? "Cancelado"
+                            : appointment.status}
                     </span>
 
                     <span
@@ -257,6 +257,7 @@ export default async function AppointmentsPage({ searchParams }: Props) {
                 <div className="mt-4 grid gap-4 md:grid-cols-3">
                   <div className="rounded-xl bg-gray-50 p-4">
                     <p className="text-sm text-gray-500">Data</p>
+
                     <p className="text-lg font-semibold text-gray-900">
                       {new Date(appointment.appointmentDate).toLocaleDateString(
                         "pt-BR",
@@ -266,6 +267,7 @@ export default async function AppointmentsPage({ searchParams }: Props) {
 
                   <div className="rounded-xl bg-gray-50 p-4">
                     <p className="text-sm text-gray-500">Pagamento</p>
+
                     <p className="text-lg font-semibold text-gray-900">
                       {appointment.paymentMode === "CLUB"
                         ? "AutoCare Club"
@@ -275,6 +277,7 @@ export default async function AppointmentsPage({ searchParams }: Props) {
 
                   <div className="rounded-xl bg-gray-50 p-4">
                     <p className="text-sm text-gray-500">Consumo do plano</p>
+
                     <p className="text-lg font-semibold text-gray-900">
                       {appointment.usedPlan ? "Sim" : "Não"}
                     </p>
@@ -284,17 +287,19 @@ export default async function AppointmentsPage({ searchParams }: Props) {
                 {appointment.notes ? (
                   <div className="mt-4 rounded-xl border border-gray-200 p-4">
                     <p className="text-sm text-gray-500">Observações</p>
+
                     <p className="mt-1 text-gray-700">{appointment.notes}</p>
                   </div>
                 ) : null}
 
-                {appointment.status !== "CANCELED" ? (
+                {appointment.status === "SCHEDULED" ? (
                   <form action={cancelAppointment} className="mt-4">
                     <input
                       type="hidden"
                       name="appointmentId"
                       value={appointment.id}
                     />
+
                     <button
                       type="submit"
                       className="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"

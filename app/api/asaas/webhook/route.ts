@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "../../../../lib/prisma";
+
+const paidEvents = ["PAYMENT_RECEIVED", "PAYMENT_CONFIRMED"];
+const paidStatuses = ["RECEIVED", "CONFIRMED"];
 
 export async function POST(req: Request) {
   const token = req.headers.get("asaas-access-token");
@@ -9,25 +13,63 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-
-  const event = body.event;
+  const event = String(body.event ?? "");
   const payment = body.payment;
 
   if (!payment?.id) {
     return NextResponse.json({ ok: true });
   }
 
-  await prisma.payment.updateMany({
+  const paymentStatus = String(payment.status ?? event);
+  const isPaidEvent = paidEvents.includes(event);
+
+  const paymentUpdateData: {
+    status: string;
+    value?: number;
+    invoiceUrl?: string | null;
+    billingType?: string;
+  } = {
+    status: paymentStatus,
+  };
+
+  if (payment.value !== undefined && payment.value !== null) {
+    paymentUpdateData.value = Number(payment.value);
+  }
+
+  if (payment.invoiceUrl !== undefined) {
+    paymentUpdateData.invoiceUrl = payment.invoiceUrl ?? null;
+  }
+
+  if (payment.billingType) {
+    paymentUpdateData.billingType = payment.billingType;
+  }
+
+  if (!isPaidEvent) {
+    await prisma.payment.updateMany({
+      where: {
+        asaasPaymentId: payment.id,
+        status: {
+          notIn: paidStatuses,
+        },
+      },
+      data: paymentUpdateData,
+    });
+
+    return NextResponse.json({ ok: true });
+  }
+
+  const updatedPayment = await prisma.payment.updateMany({
     where: {
       asaasPaymentId: payment.id,
+      status: {
+        notIn: paidStatuses,
+      },
     },
-    data: {
-      status: payment.status ?? event,
-    },
+    data: paymentUpdateData,
   });
 
-  if (event !== "PAYMENT_RECEIVED" && event !== "PAYMENT_CONFIRMED") {
-    return NextResponse.json({ ok: true });
+  if (updatedPayment.count === 0) {
+    return NextResponse.json({ ok: true, duplicated: true });
   }
 
   const localPayment = await prisma.payment.findUnique({
@@ -45,7 +87,9 @@ export async function POST(req: Request) {
 
   const now = new Date();
   const graceUntil = new Date(now);
-  graceUntil.setDate(graceUntil.getDate() + localPayment.planPackage.graceDays);
+  graceUntil.setDate(
+    graceUntil.getDate() + localPayment.planPackage.graceDays,
+  );
 
   await prisma.userPlan.upsert({
     where: {
@@ -73,5 +117,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, activated: true });
 }
