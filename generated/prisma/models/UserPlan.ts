@@ -27,12 +27,14 @@ export type AggregateUserPlan = {
 }
 
 export type UserPlanAvgAggregateOutputType = {
+  initialMileage: number | null
   totalRevisions: number | null
   usedRevisions: number | null
   availableBalance: number | null
 }
 
 export type UserPlanSumAggregateOutputType = {
+  initialMileage: number | null
   totalRevisions: number | null
   usedRevisions: number | null
   availableBalance: number | null
@@ -42,6 +44,8 @@ export type UserPlanMinAggregateOutputType = {
   id: string | null
   userId: string | null
   planPackageId: string | null
+  vehicleId: string | null
+  initialMileage: number | null
   status: $Enums.PlanStatus | null
   totalRevisions: number | null
   usedRevisions: number | null
@@ -57,6 +61,8 @@ export type UserPlanMaxAggregateOutputType = {
   id: string | null
   userId: string | null
   planPackageId: string | null
+  vehicleId: string | null
+  initialMileage: number | null
   status: $Enums.PlanStatus | null
   totalRevisions: number | null
   usedRevisions: number | null
@@ -72,6 +78,8 @@ export type UserPlanCountAggregateOutputType = {
   id: number
   userId: number
   planPackageId: number
+  vehicleId: number
+  initialMileage: number
   status: number
   totalRevisions: number
   usedRevisions: number
@@ -86,12 +94,14 @@ export type UserPlanCountAggregateOutputType = {
 
 
 export type UserPlanAvgAggregateInputType = {
+  initialMileage?: true
   totalRevisions?: true
   usedRevisions?: true
   availableBalance?: true
 }
 
 export type UserPlanSumAggregateInputType = {
+  initialMileage?: true
   totalRevisions?: true
   usedRevisions?: true
   availableBalance?: true
@@ -101,6 +111,8 @@ export type UserPlanMinAggregateInputType = {
   id?: true
   userId?: true
   planPackageId?: true
+  vehicleId?: true
+  initialMileage?: true
   status?: true
   totalRevisions?: true
   usedRevisions?: true
@@ -116,6 +128,8 @@ export type UserPlanMaxAggregateInputType = {
   id?: true
   userId?: true
   planPackageId?: true
+  vehicleId?: true
+  initialMileage?: true
   status?: true
   totalRevisions?: true
   usedRevisions?: true
@@ -131,6 +145,8 @@ export type UserPlanCountAggregateInputType = {
   id?: true
   userId?: true
   planPackageId?: true
+  vehicleId?: true
+  initialMileage?: true
   status?: true
   totalRevisions?: true
   usedRevisions?: true
@@ -233,6 +249,8 @@ export type UserPlanGroupByOutputType = {
   id: string
   userId: string
   planPackageId: string
+  vehicleId: string | null
+  initialMileage: number | null
   status: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions: number
@@ -271,6 +289,8 @@ export type UserPlanWhereInput = {
   id?: Prisma.StringFilter<"UserPlan"> | string
   userId?: Prisma.StringFilter<"UserPlan"> | string
   planPackageId?: Prisma.StringFilter<"UserPlan"> | string
+  vehicleId?: Prisma.StringNullableFilter<"UserPlan"> | string | null
+  initialMileage?: Prisma.IntNullableFilter<"UserPlan"> | number | null
   status?: Prisma.EnumPlanStatusFilter<"UserPlan"> | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFilter<"UserPlan"> | number
   usedRevisions?: Prisma.IntFilter<"UserPlan"> | number
@@ -282,6 +302,7 @@ export type UserPlanWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"UserPlan"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   planPackage?: Prisma.XOR<Prisma.PlanPackageScalarRelationFilter, Prisma.PlanPackageWhereInput>
+  vehicle?: Prisma.XOR<Prisma.VehicleNullableScalarRelationFilter, Prisma.VehicleWhereInput> | null
   appointments?: Prisma.AppointmentListRelationFilter
 }
 
@@ -289,6 +310,8 @@ export type UserPlanOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   planPackageId?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  initialMileage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
@@ -300,6 +323,7 @@ export type UserPlanOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   planPackage?: Prisma.PlanPackageOrderByWithRelationInput
+  vehicle?: Prisma.VehicleOrderByWithRelationInput
   appointments?: Prisma.AppointmentOrderByRelationAggregateInput
 }
 
@@ -310,6 +334,8 @@ export type UserPlanWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UserPlanWhereInput[]
   NOT?: Prisma.UserPlanWhereInput | Prisma.UserPlanWhereInput[]
   planPackageId?: Prisma.StringFilter<"UserPlan"> | string
+  vehicleId?: Prisma.StringNullableFilter<"UserPlan"> | string | null
+  initialMileage?: Prisma.IntNullableFilter<"UserPlan"> | number | null
   status?: Prisma.EnumPlanStatusFilter<"UserPlan"> | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFilter<"UserPlan"> | number
   usedRevisions?: Prisma.IntFilter<"UserPlan"> | number
@@ -321,6 +347,7 @@ export type UserPlanWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"UserPlan"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   planPackage?: Prisma.XOR<Prisma.PlanPackageScalarRelationFilter, Prisma.PlanPackageWhereInput>
+  vehicle?: Prisma.XOR<Prisma.VehicleNullableScalarRelationFilter, Prisma.VehicleWhereInput> | null
   appointments?: Prisma.AppointmentListRelationFilter
 }, "id" | "userId">
 
@@ -328,6 +355,8 @@ export type UserPlanOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   planPackageId?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  initialMileage?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
@@ -351,6 +380,8 @@ export type UserPlanScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"UserPlan"> | string
   userId?: Prisma.StringWithAggregatesFilter<"UserPlan"> | string
   planPackageId?: Prisma.StringWithAggregatesFilter<"UserPlan"> | string
+  vehicleId?: Prisma.StringNullableWithAggregatesFilter<"UserPlan"> | string | null
+  initialMileage?: Prisma.IntNullableWithAggregatesFilter<"UserPlan"> | number | null
   status?: Prisma.EnumPlanStatusWithAggregatesFilter<"UserPlan"> | $Enums.PlanStatus
   totalRevisions?: Prisma.IntWithAggregatesFilter<"UserPlan"> | number
   usedRevisions?: Prisma.IntWithAggregatesFilter<"UserPlan"> | number
@@ -364,6 +395,7 @@ export type UserPlanScalarWhereWithAggregatesInput = {
 
 export type UserPlanCreateInput = {
   id?: string
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -375,6 +407,7 @@ export type UserPlanCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserPlanInput
   planPackage: Prisma.PlanPackageCreateNestedOneWithoutUserPlansInput
+  vehicle?: Prisma.VehicleCreateNestedOneWithoutUserPlansInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutUserPlanInput
 }
 
@@ -382,6 +415,8 @@ export type UserPlanUncheckedCreateInput = {
   id?: string
   userId: string
   planPackageId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -396,6 +431,7 @@ export type UserPlanUncheckedCreateInput = {
 
 export type UserPlanUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -407,6 +443,7 @@ export type UserPlanUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserPlanNestedInput
   planPackage?: Prisma.PlanPackageUpdateOneRequiredWithoutUserPlansNestedInput
+  vehicle?: Prisma.VehicleUpdateOneWithoutUserPlansNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutUserPlanNestedInput
 }
 
@@ -414,6 +451,8 @@ export type UserPlanUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -430,6 +469,8 @@ export type UserPlanCreateManyInput = {
   id?: string
   userId: string
   planPackageId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -443,6 +484,7 @@ export type UserPlanCreateManyInput = {
 
 export type UserPlanUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -458,6 +500,8 @@ export type UserPlanUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -488,6 +532,8 @@ export type UserPlanCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   planPackageId?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
+  initialMileage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
@@ -500,6 +546,7 @@ export type UserPlanCountOrderByAggregateInput = {
 }
 
 export type UserPlanAvgOrderByAggregateInput = {
+  initialMileage?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
   availableBalance?: Prisma.SortOrder
@@ -509,6 +556,8 @@ export type UserPlanMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   planPackageId?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
+  initialMileage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
@@ -524,6 +573,8 @@ export type UserPlanMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   planPackageId?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
+  initialMileage?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
@@ -536,6 +587,7 @@ export type UserPlanMinOrderByAggregateInput = {
 }
 
 export type UserPlanSumOrderByAggregateInput = {
+  initialMileage?: Prisma.SortOrder
   totalRevisions?: Prisma.SortOrder
   usedRevisions?: Prisma.SortOrder
   availableBalance?: Prisma.SortOrder
@@ -631,12 +683,63 @@ export type UserPlanUncheckedUpdateManyWithoutPlanPackageNestedInput = {
   deleteMany?: Prisma.UserPlanScalarWhereInput | Prisma.UserPlanScalarWhereInput[]
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type EnumPlanStatusFieldUpdateOperationsInput = {
   set?: $Enums.PlanStatus
 }
 
+export type UserPlanCreateNestedManyWithoutVehicleInput = {
+  create?: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput> | Prisma.UserPlanCreateWithoutVehicleInput[] | Prisma.UserPlanUncheckedCreateWithoutVehicleInput[]
+  connectOrCreate?: Prisma.UserPlanCreateOrConnectWithoutVehicleInput | Prisma.UserPlanCreateOrConnectWithoutVehicleInput[]
+  createMany?: Prisma.UserPlanCreateManyVehicleInputEnvelope
+  connect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+}
+
+export type UserPlanUncheckedCreateNestedManyWithoutVehicleInput = {
+  create?: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput> | Prisma.UserPlanCreateWithoutVehicleInput[] | Prisma.UserPlanUncheckedCreateWithoutVehicleInput[]
+  connectOrCreate?: Prisma.UserPlanCreateOrConnectWithoutVehicleInput | Prisma.UserPlanCreateOrConnectWithoutVehicleInput[]
+  createMany?: Prisma.UserPlanCreateManyVehicleInputEnvelope
+  connect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+}
+
+export type UserPlanUpdateManyWithoutVehicleNestedInput = {
+  create?: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput> | Prisma.UserPlanCreateWithoutVehicleInput[] | Prisma.UserPlanUncheckedCreateWithoutVehicleInput[]
+  connectOrCreate?: Prisma.UserPlanCreateOrConnectWithoutVehicleInput | Prisma.UserPlanCreateOrConnectWithoutVehicleInput[]
+  upsert?: Prisma.UserPlanUpsertWithWhereUniqueWithoutVehicleInput | Prisma.UserPlanUpsertWithWhereUniqueWithoutVehicleInput[]
+  createMany?: Prisma.UserPlanCreateManyVehicleInputEnvelope
+  set?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  disconnect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  delete?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  connect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  update?: Prisma.UserPlanUpdateWithWhereUniqueWithoutVehicleInput | Prisma.UserPlanUpdateWithWhereUniqueWithoutVehicleInput[]
+  updateMany?: Prisma.UserPlanUpdateManyWithWhereWithoutVehicleInput | Prisma.UserPlanUpdateManyWithWhereWithoutVehicleInput[]
+  deleteMany?: Prisma.UserPlanScalarWhereInput | Prisma.UserPlanScalarWhereInput[]
+}
+
+export type UserPlanUncheckedUpdateManyWithoutVehicleNestedInput = {
+  create?: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput> | Prisma.UserPlanCreateWithoutVehicleInput[] | Prisma.UserPlanUncheckedCreateWithoutVehicleInput[]
+  connectOrCreate?: Prisma.UserPlanCreateOrConnectWithoutVehicleInput | Prisma.UserPlanCreateOrConnectWithoutVehicleInput[]
+  upsert?: Prisma.UserPlanUpsertWithWhereUniqueWithoutVehicleInput | Prisma.UserPlanUpsertWithWhereUniqueWithoutVehicleInput[]
+  createMany?: Prisma.UserPlanCreateManyVehicleInputEnvelope
+  set?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  disconnect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  delete?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  connect?: Prisma.UserPlanWhereUniqueInput | Prisma.UserPlanWhereUniqueInput[]
+  update?: Prisma.UserPlanUpdateWithWhereUniqueWithoutVehicleInput | Prisma.UserPlanUpdateWithWhereUniqueWithoutVehicleInput[]
+  updateMany?: Prisma.UserPlanUpdateManyWithWhereWithoutVehicleInput | Prisma.UserPlanUpdateManyWithWhereWithoutVehicleInput[]
+  deleteMany?: Prisma.UserPlanScalarWhereInput | Prisma.UserPlanScalarWhereInput[]
+}
+
 export type UserPlanCreateWithoutUserInput = {
   id?: string
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -647,12 +750,15 @@ export type UserPlanCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   planPackage: Prisma.PlanPackageCreateNestedOneWithoutUserPlansInput
+  vehicle?: Prisma.VehicleCreateNestedOneWithoutUserPlansInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutUserPlanInput
 }
 
 export type UserPlanUncheckedCreateWithoutUserInput = {
   id?: string
   planPackageId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -683,6 +789,7 @@ export type UserPlanUpdateToOneWithWhereWithoutUserInput = {
 
 export type UserPlanUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -693,12 +800,15 @@ export type UserPlanUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   planPackage?: Prisma.PlanPackageUpdateOneRequiredWithoutUserPlansNestedInput
+  vehicle?: Prisma.VehicleUpdateOneWithoutUserPlansNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutUserPlanNestedInput
 }
 
 export type UserPlanUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -713,6 +823,7 @@ export type UserPlanUncheckedUpdateWithoutUserInput = {
 
 export type UserPlanCreateWithoutAppointmentsInput = {
   id?: string
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -724,12 +835,15 @@ export type UserPlanCreateWithoutAppointmentsInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserPlanInput
   planPackage: Prisma.PlanPackageCreateNestedOneWithoutUserPlansInput
+  vehicle?: Prisma.VehicleCreateNestedOneWithoutUserPlansInput
 }
 
 export type UserPlanUncheckedCreateWithoutAppointmentsInput = {
   id?: string
   userId: string
   planPackageId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -759,6 +873,7 @@ export type UserPlanUpdateToOneWithWhereWithoutAppointmentsInput = {
 
 export type UserPlanUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -770,12 +885,15 @@ export type UserPlanUpdateWithoutAppointmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserPlanNestedInput
   planPackage?: Prisma.PlanPackageUpdateOneRequiredWithoutUserPlansNestedInput
+  vehicle?: Prisma.VehicleUpdateOneWithoutUserPlansNestedInput
 }
 
 export type UserPlanUncheckedUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -789,6 +907,7 @@ export type UserPlanUncheckedUpdateWithoutAppointmentsInput = {
 
 export type UserPlanCreateWithoutPlanPackageInput = {
   id?: string
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -799,12 +918,15 @@ export type UserPlanCreateWithoutPlanPackageInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserPlanInput
+  vehicle?: Prisma.VehicleCreateNestedOneWithoutUserPlansInput
   appointments?: Prisma.AppointmentCreateNestedManyWithoutUserPlanInput
 }
 
 export type UserPlanUncheckedCreateWithoutPlanPackageInput = {
   id?: string
   userId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -850,6 +972,8 @@ export type UserPlanScalarWhereInput = {
   id?: Prisma.StringFilter<"UserPlan"> | string
   userId?: Prisma.StringFilter<"UserPlan"> | string
   planPackageId?: Prisma.StringFilter<"UserPlan"> | string
+  vehicleId?: Prisma.StringNullableFilter<"UserPlan"> | string | null
+  initialMileage?: Prisma.IntNullableFilter<"UserPlan"> | number | null
   status?: Prisma.EnumPlanStatusFilter<"UserPlan"> | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFilter<"UserPlan"> | number
   usedRevisions?: Prisma.IntFilter<"UserPlan"> | number
@@ -861,9 +985,71 @@ export type UserPlanScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"UserPlan"> | Date | string
 }
 
+export type UserPlanCreateWithoutVehicleInput = {
+  id?: string
+  initialMileage?: number | null
+  status?: $Enums.PlanStatus
+  totalRevisions: number
+  usedRevisions?: number
+  availableBalance: number
+  graceUntil: Date | string
+  startedAt?: Date | string
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutUserPlanInput
+  planPackage: Prisma.PlanPackageCreateNestedOneWithoutUserPlansInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutUserPlanInput
+}
+
+export type UserPlanUncheckedCreateWithoutVehicleInput = {
+  id?: string
+  userId: string
+  planPackageId: string
+  initialMileage?: number | null
+  status?: $Enums.PlanStatus
+  totalRevisions: number
+  usedRevisions?: number
+  availableBalance: number
+  graceUntil: Date | string
+  startedAt?: Date | string
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutUserPlanInput
+}
+
+export type UserPlanCreateOrConnectWithoutVehicleInput = {
+  where: Prisma.UserPlanWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput>
+}
+
+export type UserPlanCreateManyVehicleInputEnvelope = {
+  data: Prisma.UserPlanCreateManyVehicleInput | Prisma.UserPlanCreateManyVehicleInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserPlanUpsertWithWhereUniqueWithoutVehicleInput = {
+  where: Prisma.UserPlanWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserPlanUpdateWithoutVehicleInput, Prisma.UserPlanUncheckedUpdateWithoutVehicleInput>
+  create: Prisma.XOR<Prisma.UserPlanCreateWithoutVehicleInput, Prisma.UserPlanUncheckedCreateWithoutVehicleInput>
+}
+
+export type UserPlanUpdateWithWhereUniqueWithoutVehicleInput = {
+  where: Prisma.UserPlanWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserPlanUpdateWithoutVehicleInput, Prisma.UserPlanUncheckedUpdateWithoutVehicleInput>
+}
+
+export type UserPlanUpdateManyWithWhereWithoutVehicleInput = {
+  where: Prisma.UserPlanScalarWhereInput
+  data: Prisma.XOR<Prisma.UserPlanUpdateManyMutationInput, Prisma.UserPlanUncheckedUpdateManyWithoutVehicleInput>
+}
+
 export type UserPlanCreateManyPlanPackageInput = {
   id?: string
   userId: string
+  vehicleId?: string | null
+  initialMileage?: number | null
   status?: $Enums.PlanStatus
   totalRevisions: number
   usedRevisions?: number
@@ -877,6 +1063,7 @@ export type UserPlanCreateManyPlanPackageInput = {
 
 export type UserPlanUpdateWithoutPlanPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -887,12 +1074,15 @@ export type UserPlanUpdateWithoutPlanPackageInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserPlanNestedInput
+  vehicle?: Prisma.VehicleUpdateOneWithoutUserPlansNestedInput
   appointments?: Prisma.AppointmentUpdateManyWithoutUserPlanNestedInput
 }
 
 export type UserPlanUncheckedUpdateWithoutPlanPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -908,6 +1098,74 @@ export type UserPlanUncheckedUpdateWithoutPlanPackageInput = {
 export type UserPlanUncheckedUpdateManyWithoutPlanPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
+  totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  availableBalance?: Prisma.IntFieldUpdateOperationsInput | number
+  graceUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserPlanCreateManyVehicleInput = {
+  id?: string
+  userId: string
+  planPackageId: string
+  initialMileage?: number | null
+  status?: $Enums.PlanStatus
+  totalRevisions: number
+  usedRevisions?: number
+  availableBalance: number
+  graceUntil: Date | string
+  startedAt?: Date | string
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserPlanUpdateWithoutVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
+  totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  availableBalance?: Prisma.IntFieldUpdateOperationsInput | number
+  graceUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutUserPlanNestedInput
+  planPackage?: Prisma.PlanPackageUpdateOneRequiredWithoutUserPlansNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutUserPlanNestedInput
+}
+
+export type UserPlanUncheckedUpdateWithoutVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
+  totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
+  availableBalance?: Prisma.IntFieldUpdateOperationsInput | number
+  graceUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutUserPlanNestedInput
+}
+
+export type UserPlanUncheckedUpdateManyWithoutVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  planPackageId?: Prisma.StringFieldUpdateOperationsInput | string
+  initialMileage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPlanStatusFieldUpdateOperationsInput | $Enums.PlanStatus
   totalRevisions?: Prisma.IntFieldUpdateOperationsInput | number
   usedRevisions?: Prisma.IntFieldUpdateOperationsInput | number
@@ -954,6 +1212,8 @@ export type UserPlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   userId?: boolean
   planPackageId?: boolean
+  vehicleId?: boolean
+  initialMileage?: boolean
   status?: boolean
   totalRevisions?: boolean
   usedRevisions?: boolean
@@ -965,6 +1225,7 @@ export type UserPlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
   appointments?: boolean | Prisma.UserPlan$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserPlanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userPlan"]>
@@ -973,6 +1234,8 @@ export type UserPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   userId?: boolean
   planPackageId?: boolean
+  vehicleId?: boolean
+  initialMileage?: boolean
   status?: boolean
   totalRevisions?: boolean
   usedRevisions?: boolean
@@ -984,12 +1247,15 @@ export type UserPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
 }, ExtArgs["result"]["userPlan"]>
 
 export type UserPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
   planPackageId?: boolean
+  vehicleId?: boolean
+  initialMileage?: boolean
   status?: boolean
   totalRevisions?: boolean
   usedRevisions?: boolean
@@ -1001,12 +1267,15 @@ export type UserPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
 }, ExtArgs["result"]["userPlan"]>
 
 export type UserPlanSelectScalar = {
   id?: boolean
   userId?: boolean
   planPackageId?: boolean
+  vehicleId?: boolean
+  initialMileage?: boolean
   status?: boolean
   totalRevisions?: boolean
   usedRevisions?: boolean
@@ -1018,20 +1287,23 @@ export type UserPlanSelectScalar = {
   updatedAt?: boolean
 }
 
-export type UserPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planPackageId" | "status" | "totalRevisions" | "usedRevisions" | "availableBalance" | "graceUntil" | "startedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["userPlan"]>
+export type UserPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "planPackageId" | "vehicleId" | "initialMileage" | "status" | "totalRevisions" | "usedRevisions" | "availableBalance" | "graceUntil" | "startedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["userPlan"]>
 export type UserPlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
   appointments?: boolean | Prisma.UserPlan$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserPlanCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserPlanIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
 }
 export type UserPlanIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   planPackage?: boolean | Prisma.PlanPackageDefaultArgs<ExtArgs>
+  vehicle?: boolean | Prisma.UserPlan$vehicleArgs<ExtArgs>
 }
 
 export type $UserPlanPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1039,12 +1311,15 @@ export type $UserPlanPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     planPackage: Prisma.$PlanPackagePayload<ExtArgs>
+    vehicle: Prisma.$VehiclePayload<ExtArgs> | null
     appointments: Prisma.$AppointmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
     planPackageId: string
+    vehicleId: string | null
+    initialMileage: number | null
     status: $Enums.PlanStatus
     totalRevisions: number
     usedRevisions: number
@@ -1450,6 +1725,7 @@ export interface Prisma__UserPlanClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   planPackage<T extends Prisma.PlanPackageDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PlanPackageDefaultArgs<ExtArgs>>): Prisma.Prisma__PlanPackageClient<runtime.Types.Result.GetResult<Prisma.$PlanPackagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  vehicle<T extends Prisma.UserPlan$vehicleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserPlan$vehicleArgs<ExtArgs>>): Prisma.Prisma__VehicleClient<runtime.Types.Result.GetResult<Prisma.$VehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   appointments<T extends Prisma.UserPlan$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserPlan$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1483,6 +1759,8 @@ export interface UserPlanFieldRefs {
   readonly id: Prisma.FieldRef<"UserPlan", 'String'>
   readonly userId: Prisma.FieldRef<"UserPlan", 'String'>
   readonly planPackageId: Prisma.FieldRef<"UserPlan", 'String'>
+  readonly vehicleId: Prisma.FieldRef<"UserPlan", 'String'>
+  readonly initialMileage: Prisma.FieldRef<"UserPlan", 'Int'>
   readonly status: Prisma.FieldRef<"UserPlan", 'PlanStatus'>
   readonly totalRevisions: Prisma.FieldRef<"UserPlan", 'Int'>
   readonly usedRevisions: Prisma.FieldRef<"UserPlan", 'Int'>
@@ -1890,6 +2168,25 @@ export type UserPlanDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many UserPlans to delete.
    */
   limit?: number
+}
+
+/**
+ * UserPlan.vehicle
+ */
+export type UserPlan$vehicleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Vehicle
+   */
+  select?: Prisma.VehicleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Vehicle
+   */
+  omit?: Prisma.VehicleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.VehicleInclude<ExtArgs> | null
+  where?: Prisma.VehicleWhereInput
 }
 
 /**

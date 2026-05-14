@@ -32,19 +32,20 @@ enum UserRole {
 model User {
   id               String    @id @default(cuid())
   name             String?
-  email            String?   @unique
-  password         String?
-  image            String?
+  email            String    @unique
+  password         String
   phone            String?
-  role             UserRole  @default(CUSTOMER)
+  image            String?
   resetToken       String?
   resetTokenExpiry DateTime?
+  role             UserRole  @default(CUSTOMER)
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   appointments Appointment[]
-  userPlan     UserPlan?
   payments     Payment[]
+  userPlan     UserPlan?
+  vehicles     Vehicle[]
 }
 
 model Workshop {
@@ -102,6 +103,7 @@ model Appointment {
   workshopId        String
   revisionServiceId String
   userPlanId        String?
+  vehicleId         String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
@@ -109,10 +111,12 @@ model Appointment {
   workshop        Workshop        @relation(fields: [workshopId], references: [id], onDelete: Cascade)
   revisionService RevisionService @relation(fields: [revisionServiceId], references: [id], onDelete: Cascade)
   userPlan        UserPlan?       @relation(fields: [userPlanId], references: [id], onDelete: SetNull)
+  vehicle         Vehicle?        @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([workshopId])
   @@index([revisionServiceId])
+  @@index([vehicleId])
   @@index([appointmentDate])
 }
 
@@ -135,6 +139,8 @@ model UserPlan {
   id               String     @id @default(cuid())
   userId           String     @unique
   planPackageId    String
+  vehicleId        String?
+  initialMileage   Int?
   status           PlanStatus @default(ACTIVE)
   totalRevisions   Int
   usedRevisions    Int        @default(0)
@@ -145,11 +151,13 @@ model UserPlan {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planPackage  PlanPackage   @relation(fields: [planPackageId], references: [id], onDelete: Restrict)
+  user         User          @relation(fields: [userId], references: [id])
+  planPackage  PlanPackage   @relation(fields: [planPackageId], references: [id])
+  vehicle      Vehicle?      @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   appointments Appointment[]
 
   @@index([planPackageId])
+  @@index([vehicleId])
 }
 
 model Payment {
@@ -166,4 +174,25 @@ model Payment {
 
   user        User        @relation(fields: [userId], references: [id])
   planPackage PlanPackage @relation(fields: [planPackageId], references: [id])
+}
+
+model Vehicle {
+  id             String    @id @default(cuid())
+  userId         String
+  brand          String
+  model          String
+  year           Int?
+  plate          String?
+  currentMileage Int
+  purchaseDate   DateTime?
+  notes          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments Appointment[]
+  userPlans    UserPlan[]
+
+  @@index([userId])
+  @@index([plate])
 }

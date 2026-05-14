@@ -1,34 +1,51 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+
 import { authOptions } from "../lib/auth";
 import { prisma } from "../lib/prisma";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
 
-  const nextAppointment = session?.user?.id
-    ? await prisma.appointment.findFirst({
-        where: {
-          userId: session.user.id,
-          status: "SCHEDULED",
-        },
-        include: {
-          workshop: true,
-          revisionService: true,
-        },
-        orderBy: {
-          appointmentDate: "asc",
-        },
-      })
-    : null;
+  const [nextAppointment, appointmentsCount, vehiclesCount] = await (async () => {
+    try {
+      if (!session?.user?.id) {
+        return [null, 0, 0] as const;
+      }
 
-  const appointmentsCount = session?.user?.id
-    ? await prisma.appointment.count({
-        where: {
-          userId: session.user.id,
-        },
-      })
-    : 0;
+      const [appointment, totalAppointments, totalVehicles] =
+        await prisma.$transaction([
+          prisma.appointment.findFirst({
+            where: {
+              userId: session.user.id,
+              status: "SCHEDULED",
+            },
+            include: {
+              workshop: true,
+              revisionService: true,
+              vehicle: true,
+            },
+            orderBy: {
+              appointmentDate: "asc",
+            },
+          }),
+          prisma.appointment.count({
+            where: {
+              userId: session.user.id,
+            },
+          }),
+          prisma.vehicle.count({
+            where: {
+              userId: session.user.id,
+            },
+          }),
+        ]);
+
+      return [appointment, totalAppointments, totalVehicles] as const;
+    } catch {
+      return [null, 0, 0] as const;
+    }
+  })();
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -36,7 +53,7 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-6xl gap-10 px-6 py-16 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
-              AutoCare Club
+              myRiseCare
             </p>
 
             <h1 className="mt-4 text-5xl font-bold leading-tight">
@@ -44,8 +61,8 @@ export default async function HomePage() {
             </h1>
 
             <p className="mt-5 max-w-xl text-lg text-white/90">
-              Encontre oficinas, agende revisões, acompanhe seus serviços e
-              tenha mais controle sobre a manutenção do seu veículo.
+              Compre pacotes de revisões antecipadamente, acompanhe seu saldo,
+              cadastre seus veículos e agende serviços com mais controle.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -57,10 +74,10 @@ export default async function HomePage() {
               </Link>
 
               <Link
-                href="/appointments"
+                href="/plans"
                 className="rounded-lg border border-white px-5 py-3 font-semibold text-white transition hover:bg-white/10"
               >
-                Meus agendamentos
+                Ver planos
               </Link>
 
               {!session?.user ? (
@@ -70,7 +87,14 @@ export default async function HomePage() {
                 >
                   Criar conta
                 </Link>
-              ) : null}
+              ) : (
+                <Link
+                  href="/vehicles"
+                  className="rounded-lg bg-gray-900 px-5 py-3 font-semibold text-white transition hover:bg-black"
+                >
+                  Meus veículos
+                </Link>
+              )}
             </div>
           </div>
 
@@ -83,16 +107,28 @@ export default async function HomePage() {
               <div className="mt-4 space-y-4">
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <p className="text-sm text-gray-500">Usuário</p>
+
                   <p className="text-xl font-bold text-gray-900">
                     {session.user.name ?? session.user.email}
                   </p>
                 </div>
 
-                <div className="rounded-2xl bg-gray-50 p-4">
-                  <p className="text-sm text-gray-500">Total de agendamentos</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {appointmentsCount}
-                  </p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl bg-gray-50 p-4">
+                    <p className="text-sm text-gray-500">Agendamentos</p>
+
+                    <p className="text-3xl font-bold text-gray-900">
+                      {appointmentsCount}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-gray-50 p-4">
+                    <p className="text-sm text-gray-500">Veículos</p>
+
+                    <p className="text-3xl font-bold text-gray-900">
+                      {vehiclesCount}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="rounded-2xl bg-gray-50 p-4">
@@ -103,9 +139,18 @@ export default async function HomePage() {
                       <p className="text-lg font-bold text-gray-900">
                         {nextAppointment.revisionService.name}
                       </p>
+
                       <p className="mt-1 text-sm text-gray-600">
                         {nextAppointment.workshop.name}
                       </p>
+
+                      {nextAppointment.vehicle ? (
+                        <p className="mt-1 text-sm text-gray-600">
+                          {nextAppointment.vehicle.brand}{" "}
+                          {nextAppointment.vehicle.model}
+                        </p>
+                      ) : null}
+
                       <p className="mt-1 text-sm text-gray-500">
                         {new Date(
                           nextAppointment.appointmentDate,
@@ -123,22 +168,29 @@ export default async function HomePage() {
               <div className="mt-4 space-y-4">
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <p className="text-sm text-gray-500">1. Crie sua conta</p>
+
                   <p className="mt-1 font-semibold text-gray-900">
-                    Cadastre-se para acessar seus agendamentos
+                    Cadastre-se para acessar seus planos e agendamentos
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-gray-50 p-4">
-                  <p className="text-sm text-gray-500">2. Escolha a oficina</p>
+                  <p className="text-sm text-gray-500">
+                    2. Cadastre seu veículo
+                  </p>
+
                   <p className="mt-1 font-semibold text-gray-900">
-                    Veja revisões e compare os preços
+                    Informe modelo, ano e quilometragem atual
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-gray-50 p-4">
-                  <p className="text-sm text-gray-500">3. Agende sua revisão</p>
+                  <p className="text-sm text-gray-500">
+                    3. Agende sua revisão
+                  </p>
+
                   <p className="mt-1 font-semibold text-gray-900">
-                    Confirme a data e acompanhe tudo na sua área
+                    Escolha a oficina, a revisão e a forma de pagamento
                   </p>
                 </div>
               </div>
@@ -149,28 +201,33 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-6xl px-6 py-14">
         <h2 className="text-3xl font-bold text-gray-900">
-          Vantagens do AutoCare Club
+          Vantagens do myRiseCare
         </h2>
 
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl bg-white p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900">💰 Economia</h3>
+
             <p className="mt-3 text-gray-600">
-              Até 15% de desconto em revisões programadas.
+              Pacotes de 3 a 6 revisões com descontos progressivos de até 15%.
             </p>
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900">📅 Planejamento</h3>
+
             <p className="mt-3 text-gray-600">
-              Organize suas revisões com mais previsibilidade e praticidade.
+              Organize suas revisões por quilometragem, período e saldo
+              disponível.
             </p>
           </div>
 
           <div className="rounded-2xl bg-white p-6 shadow-sm">
             <h3 className="text-xl font-bold text-gray-900">🚗 Conveniência</h3>
+
             <p className="mt-3 text-gray-600">
-              Agende rapidamente e acompanhe tudo pelo sistema.
+              Cadastre seus veículos, agende rapidamente e acompanhe tudo pelo
+              sistema.
             </p>
           </div>
         </div>
@@ -185,17 +242,21 @@ export default async function HomePage() {
               <h3 className="text-xl font-bold text-gray-900">
                 1. Cadastre-se
               </h3>
+
               <p className="mt-3 text-gray-600">
-                Crie sua conta para acessar seu painel e seus agendamentos.
+                Crie sua conta para acessar seu painel, veículos, planos e
+                agendamentos.
               </p>
             </div>
 
             <div className="rounded-2xl border border-gray-200 p-6">
               <h3 className="text-xl font-bold text-gray-900">
-                2. Escolha a revisão
+                2. Escolha o plano
               </h3>
+
               <p className="mt-3 text-gray-600">
-                Encontre a oficina ideal e veja as revisões disponíveis.
+                Contrate revisões pré-pagas com preço fixo e saldo para uso
+                futuro.
               </p>
             </div>
 
@@ -203,8 +264,10 @@ export default async function HomePage() {
               <h3 className="text-xl font-bold text-gray-900">
                 3. Agende online
               </h3>
+
               <p className="mt-3 text-gray-600">
-                Selecione a data, confirme e acompanhe tudo na sua conta.
+                Selecione oficina, veículo, data e acompanhe o histórico na sua
+                conta.
               </p>
             </div>
           </div>
@@ -216,9 +279,10 @@ export default async function HomePage() {
           <h2 className="text-3xl font-bold">
             Pronto para cuidar melhor do seu veículo?
           </h2>
+
           <p className="mt-3 max-w-2xl text-white/80">
-            Acesse as oficinas, consulte revisões disponíveis e mantenha seus
-            serviços organizados em um só lugar.
+            Acesse as oficinas, consulte revisões disponíveis, cadastre seus
+            veículos e mantenha seus serviços organizados em um só lugar.
           </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
@@ -227,6 +291,13 @@ export default async function HomePage() {
               className="rounded-lg bg-white px-5 py-3 font-semibold text-gray-900 transition hover:bg-gray-100"
             >
               Explorar oficinas
+            </Link>
+
+            <Link
+              href="/plans"
+              className="rounded-lg border border-white px-5 py-3 font-semibold text-white transition hover:bg-white/10"
+            >
+              Ver planos
             </Link>
 
             {!session?.user ? (

@@ -1,10 +1,10 @@
+import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/header";
-import { Providers } from "./providers";
 
-export const metadata = {
-  title: "AutoCare Club",
-  description: "Revisões planejadas. Preços previsíveis.",
+export const metadata: Metadata = {
+  title: "myRiseCare",
+  description: "Revisões planejadas com preço previsível",
 };
 
 export default function RootLayout({
@@ -14,11 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className="bg-gray-50 text-gray-900">
-        <Providers>
-          <Header />
-          {children}
-        </Providers>
+      <body>
+        <Header />
+        {children}
       </body>
     </html>
   );

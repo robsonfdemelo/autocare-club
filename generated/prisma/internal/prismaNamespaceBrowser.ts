@@ -57,7 +57,8 @@ export const ModelName = {
   Appointment: 'Appointment',
   PlanPackage: 'PlanPackage',
   UserPlan: 'UserPlan',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Vehicle: 'Vehicle'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -81,11 +82,11 @@ export const UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password: 'password',
-  image: 'image',
   phone: 'phone',
-  role: 'role',
+  image: 'image',
   resetToken: 'resetToken',
   resetTokenExpiry: 'resetTokenExpiry',
+  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -145,6 +146,7 @@ export const AppointmentScalarFieldEnum = {
   workshopId: 'workshopId',
   revisionServiceId: 'revisionServiceId',
   userPlanId: 'userPlanId',
+  vehicleId: 'vehicleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -171,6 +173,8 @@ export const UserPlanScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
   planPackageId: 'planPackageId',
+  vehicleId: 'vehicleId',
+  initialMileage: 'initialMileage',
   status: 'status',
   totalRevisions: 'totalRevisions',
   usedRevisions: 'usedRevisions',
@@ -199,6 +203,23 @@ export const PaymentScalarFieldEnum = {
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const VehicleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  plate: 'plate',
+  currentMileage: 'currentMileage',
+  purchaseDate: 'purchaseDate',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VehicleScalarFieldEnum = (typeof VehicleScalarFieldEnum)[keyof typeof VehicleScalarFieldEnum]
 
 
 export const SortOrder = {

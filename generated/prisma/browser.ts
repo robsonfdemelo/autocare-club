@@ -52,3 +52,8 @@ export type UserPlan = Prisma.UserPlanModel
  * 
  */
 export type Payment = Prisma.PaymentModel
+/**
+ * Model Vehicle
+ * 
+ */
+export type Vehicle = Prisma.VehicleModel

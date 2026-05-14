@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../../lib/auth";
 import { prisma } from "../../../../lib/prisma";
 
+type BillingType = "PIX" | "CREDIT_CARD";
+
 export async function POST(req: Request) {
   const apiKey = process.env.ASAAS_API_KEY;
   const baseUrl = process.env.ASAAS_BASE_URL;
@@ -25,8 +27,10 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const planId = body.planId as string | undefined;
+
+  const planId = String(body.planId ?? "").trim();
   const cpf = String(body.cpf ?? "").replace(/\D/g, "");
+  const billingType = String(body.billingType ?? "PIX") as BillingType;
 
   if (!planId || !cpf) {
     return NextResponse.json(
@@ -42,12 +46,23 @@ export async function POST(req: Request) {
     );
   }
 
+  if (billingType !== "PIX" && billingType !== "CREDIT_CARD") {
+    return NextResponse.json(
+      { error: "Forma de pagamento inválida." },
+      { status: 400 },
+    );
+  }
+
   const [plan, user] = await Promise.all([
     prisma.planPackage.findUnique({
-      where: { id: planId },
+      where: {
+        id: planId,
+      },
     }),
     prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: {
+        id: session.user.id,
+      },
     }),
   ]);
 
@@ -100,7 +115,7 @@ export async function POST(req: Request) {
     headers,
     body: JSON.stringify({
       customer: customer.id,
-      billingType: "PIX",
+      billingType,
       value,
       dueDate: new Date().toISOString().split("T")[0],
       description: `Plano ${plan.name}`,
@@ -122,7 +137,7 @@ export async function POST(req: Request) {
       status: payment.status ?? "PENDING",
       value: Number(payment.value ?? value),
       invoiceUrl: payment.invoiceUrl ?? null,
-      billingType: payment.billingType ?? "PIX",
+      billingType: payment.billingType ?? billingType,
     },
   });
 
