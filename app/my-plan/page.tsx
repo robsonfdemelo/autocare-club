@@ -11,64 +11,6 @@ export default async function MyPlanPage() {
     redirect("/login");
   }
 
-  async function subscribePlan(formData: FormData) {
-    "use server";
-
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      redirect("/login");
-    }
-
-    const packageId = formData.get("packageId") as string;
-
-    if (!packageId) {
-      redirect("/my-plan");
-    }
-
-    const selectedPackage = await prisma.planPackage.findUnique({
-      where: {
-        id: packageId,
-      },
-    });
-
-    if (!selectedPackage || !selectedPackage.isActive) {
-      redirect("/my-plan");
-    }
-
-    const now = new Date();
-    const graceUntil = new Date(now);
-    graceUntil.setDate(graceUntil.getDate() + selectedPackage.graceDays);
-
-    await prisma.userPlan.upsert({
-      where: {
-        userId: session.user.id,
-      },
-      update: {
-        planPackageId: selectedPackage.id,
-        status: "ACTIVE",
-        totalRevisions: selectedPackage.revisionsQty,
-        usedRevisions: 0,
-        availableBalance: selectedPackage.revisionsQty,
-        graceUntil,
-        startedAt: now,
-        expiresAt: null,
-      },
-      create: {
-        userId: session.user.id,
-        planPackageId: selectedPackage.id,
-        status: "ACTIVE",
-        totalRevisions: selectedPackage.revisionsQty,
-        usedRevisions: 0,
-        availableBalance: selectedPackage.revisionsQty,
-        graceUntil,
-        startedAt: now,
-      },
-    });
-
-    redirect("/my-plan?success=plan-created");
-  }
-
   const userPlan = await prisma.userPlan.findUnique({
     where: {
       userId: session.user.id,
@@ -77,6 +19,28 @@ export default async function MyPlanPage() {
       planPackage: true,
     },
   });
+
+  const completedAppointments = await prisma.appointment.findMany({
+    where: {
+      userId: session.user.id,
+      status: "COMPLETED",
+      usedPlan: true,
+    },
+    include: {
+      workshop: true,
+      revisionService: true,
+    },
+    orderBy: {
+      appointmentDate: "desc",
+    },
+  });
+
+  const totalSavings = completedAppointments.reduce((total, appointment) => {
+    const directPrice = Number(appointment.revisionService.priceDirect);
+    const clubPrice = Number(appointment.revisionService.priceClub);
+
+    return total + (directPrice - clubPrice);
+  }, 0);
 
   const availablePackages = await prisma.planPackage.findMany({
     where: {
@@ -103,11 +67,14 @@ export default async function MyPlanPage() {
           <div className="space-y-6">
             <div className="rounded-2xl bg-white p-6 shadow-sm">
               <p className="text-sm text-gray-500">Plano atual</p>
+
               <h2 className="mt-2 text-3xl font-bold text-gray-900">
                 {userPlan.planPackage.name}
               </h2>
-              <p className="mt-2 text-gray-600">
-                : Status:{" "}
+
+              <div className="mt-3 flex items-center gap-2">
+                <span className="text-sm text-gray-500">Status:</span>
+
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-bold ${
                     userPlan.status === "ACTIVE"
@@ -123,7 +90,7 @@ export default async function MyPlanPage() {
                       ? "Cancelado"
                       : "Expirado"}
                 </span>
-              </p>
+              </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -152,6 +119,33 @@ export default async function MyPlanPage() {
                 <p className="text-sm text-gray-500">Carência até</p>
                 <p className="mt-2 text-lg font-bold text-gray-900">
                   {new Date(userPlan.graceUntil).toLocaleDateString("pt-BR")}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-2xl bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">Revisões concluídas</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900">
+                  {completedAppointments.length}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">Economia total</p>
+                <p className="mt-2 text-3xl font-bold text-green-700">
+                  R$ {totalSavings.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-white p-6 shadow-sm">
+                <p className="text-sm text-gray-500">
+                  Próxima revisão sugerida
+                </p>
+                <p className="mt-2 text-2xl font-bold text-gray-900">
+                  {completedAppointments.length < userPlan.totalRevisions
+                    ? `${completedAppointments.length + 1}ª revisão do plano`
+                    : "Plano finalizado"}
                 </p>
               </div>
             </div>
@@ -186,6 +180,67 @@ export default async function MyPlanPage() {
                 </div>
               </div>
             </div>
+
+            <div className="rounded-2xl bg-white p-6 shadow-sm">
+              <h3 className="text-xl font-bold text-gray-900">
+                Histórico de revisões concluídas
+              </h3>
+
+              {completedAppointments.length === 0 ? (
+                <p className="mt-4 text-sm text-gray-600">
+                  Nenhuma revisão do plano foi concluída ainda.
+                </p>
+              ) : (
+                <div className="mt-4 space-y-3">
+                  {completedAppointments.map((appointment) => {
+                    const directPrice = Number(
+                      appointment.revisionService.priceDirect,
+                    );
+                    const clubPrice = Number(
+                      appointment.revisionService.priceClub,
+                    );
+                    const saving = directPrice - clubPrice;
+
+                    return (
+                      <div
+                        key={appointment.id}
+                        className="rounded-xl border border-gray-200 p-4"
+                      >
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                          <div>
+                            <p className="font-bold text-gray-900">
+                              {appointment.revisionService.name}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-600">
+                              {appointment.workshop.name} •{" "}
+                              {appointment.workshop.city} -{" "}
+                              {appointment.workshop.state}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-500">
+                              Concluída em{" "}
+                              {new Date(
+                                appointment.appointmentDate,
+                              ).toLocaleDateString("pt-BR")}
+                            </p>
+
+                            <p className="mt-1 text-sm font-semibold text-green-700">
+                              Economia: R$ {saving.toFixed(2).replace(".", ",")}
+                            </p>
+                          </div>
+
+                          <span className="w-fit rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                            Concluída
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/appointments"
@@ -215,9 +270,10 @@ export default async function MyPlanPage() {
               <h2 className="text-2xl font-bold text-gray-900">
                 Você ainda não possui um plano ativo
               </h2>
+
               <p className="mt-3 text-gray-600">
-                Escolha um pacote do AutoCare Club para começar a acompanhar
-                suas revisões com mais previsibilidade.
+                Escolha um pacote do myRiseCare para começar a acompanhar suas
+                revisões com mais previsibilidade.
               </p>
             </div>
 
@@ -228,6 +284,7 @@ export default async function MyPlanPage() {
                   className="rounded-2xl bg-white p-6 shadow-sm"
                 >
                   <p className="text-sm text-gray-500">Pacote</p>
+
                   <h3 className="mt-2 text-2xl font-bold text-gray-900">
                     {pkg.name}
                   </h3>
@@ -239,12 +296,14 @@ export default async function MyPlanPage() {
                       </span>{" "}
                       revisões
                     </p>
+
                     <p>
                       <span className="font-semibold text-gray-900">
                         {pkg.discountPct}%
                       </span>{" "}
                       de desconto
                     </p>
+
                     <p>
                       <span className="font-semibold text-gray-900">
                         {pkg.graceDays} dias
@@ -253,20 +312,11 @@ export default async function MyPlanPage() {
                     </p>
                   </div>
 
-                  <form action={subscribePlan} className="mt-6">
-                    <input type="hidden" name="packageId" value={pkg.id} />
-                    <button
-                      type="submit"
-                      className="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black"
-                    >
-                      Contratar plano
-                    </button>
-                  </form>
                   <Link
                     href="/plans"
-                    className="rounded-lg bg-[#B11226] px-5 py-3 font-semibold text-white"
+                    className="mt-6 block rounded-lg bg-[#B11226] px-5 py-3 text-center font-semibold text-white"
                   >
-                    Trocar ou contratar plano
+                    Contratar plano
                   </Link>
                 </div>
               ))}
