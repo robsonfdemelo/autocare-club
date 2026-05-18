@@ -16,10 +16,10 @@ export default async function Header() {
             <Image
               src="/logo-myrisecare.jpeg"
               alt="myRiseCare"
-              width={190}
-              height={55}
+              width={360}
+              height={140}
               priority
-              className="h-12 w-auto object-contain"
+              className="h-16 w-auto object-contain"
             />
           </Link>
 

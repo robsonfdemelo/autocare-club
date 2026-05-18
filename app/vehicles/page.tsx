@@ -15,6 +15,14 @@ interface Props {
   }>;
 }
 
+const MIN_VEHICLE_YEAR = 1970;
+const MAX_VEHICLE_YEAR = 2026;
+
+const VEHICLE_YEARS = Array.from(
+  { length: MAX_VEHICLE_YEAR - MIN_VEHICLE_YEAR + 1 },
+  (_, index) => MAX_VEHICLE_YEAR - index,
+);
+
 function formatDate(date?: Date | null) {
   if (!date) {
     return "-";
@@ -69,7 +77,7 @@ function getVehicleImage(vehicle: { brand: string; model: string }) {
   return "/honda_civic.jpg";
 }
 
-async function getValidUserId() {
+async function getCurrentUser() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -80,19 +88,60 @@ async function getValidUserId() {
     where: {
       id: session.user.id,
     },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
   });
 
   if (!user) {
     redirect("/login");
   }
 
-  return user.id;
+  return user;
+}
+
+async function resolveVehicleOwner(formData: FormData) {
+  const currentUser = await getCurrentUser();
+
+  if (currentUser.role !== "ADMIN") {
+    return {
+      currentUser,
+      ownerUserId: currentUser.id,
+    };
+  }
+
+  const ownerUserId = String(formData.get("ownerUserId") ?? "").trim();
+
+  if (!ownerUserId) {
+    redirect("/vehicles?mode=new&error=owner-required");
+  }
+
+  const owner = await prisma.user.findUnique({
+    where: {
+      id: ownerUserId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!owner) {
+    redirect("/vehicles?mode=new&error=owner-not-found");
+  }
+
+  return {
+    currentUser,
+    ownerUserId: owner.id,
+  };
 }
 
 async function createVehicle(formData: FormData) {
   "use server";
 
-  const userId = await getValidUserId();
+  const { ownerUserId } = await resolveVehicleOwner(formData);
 
   const brand = String(formData.get("brand") ?? "").trim();
   const model = String(formData.get("model") ?? "").trim();
@@ -117,13 +166,18 @@ async function createVehicle(formData: FormData) {
     redirect("/vehicles?mode=new&error=invalid-mileage");
   }
 
-  if (year && (!Number.isFinite(year) || year < 1900)) {
+  if (
+    year &&
+    (!Number.isFinite(year) ||
+      year < MIN_VEHICLE_YEAR ||
+      year > MAX_VEHICLE_YEAR)
+  ) {
     redirect("/vehicles?mode=new&error=invalid-year");
   }
 
   await prisma.vehicle.create({
     data: {
-      userId,
+      userId: ownerUserId,
       brand,
       model,
       year,
@@ -140,7 +194,7 @@ async function createVehicle(formData: FormData) {
 async function updateVehicle(formData: FormData) {
   "use server";
 
-  const userId = await getValidUserId();
+  const currentUser = await getCurrentUser();
 
   const vehicleId = String(formData.get("vehicleId") ?? "").trim();
   const brand = String(formData.get("brand") ?? "").trim();
@@ -170,19 +224,56 @@ async function updateVehicle(formData: FormData) {
     redirect(`/vehicles?editId=${vehicleId}&error=invalid-mileage`);
   }
 
-  if (year && (!Number.isFinite(year) || year < 1900)) {
+  if (
+    year &&
+    (!Number.isFinite(year) ||
+      year < MIN_VEHICLE_YEAR ||
+      year > MAX_VEHICLE_YEAR)
+  ) {
     redirect(`/vehicles?editId=${vehicleId}&error=invalid-year`);
   }
 
   const vehicle = await prisma.vehicle.findFirst({
-    where: {
-      id: vehicleId,
-      userId,
-    },
+    where:
+      currentUser.role === "ADMIN"
+        ? {
+            id: vehicleId,
+          }
+        : {
+            id: vehicleId,
+            userId: currentUser.id,
+          },
   });
 
   if (!vehicle) {
     redirect("/vehicles?error=not-found");
+  }
+
+  let ownerUserId = vehicle.userId;
+
+  if (currentUser.role === "ADMIN") {
+    const selectedOwnerUserId = String(
+      formData.get("ownerUserId") ?? "",
+    ).trim();
+
+    if (!selectedOwnerUserId) {
+      redirect(`/vehicles?editId=${vehicleId}&error=owner-required`);
+    }
+
+    const owner = await prisma.user.findUnique({
+      where: {
+        id: selectedOwnerUserId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!owner) {
+      redirect(`/vehicles?editId=${vehicleId}&error=owner-not-found`);
+    }
+
+    ownerUserId = owner.id;
   }
 
   await prisma.vehicle.update({
@@ -190,6 +281,7 @@ async function updateVehicle(formData: FormData) {
       id: vehicle.id,
     },
     data: {
+      userId: ownerUserId,
       brand,
       model,
       year,
@@ -206,7 +298,7 @@ async function updateVehicle(formData: FormData) {
 async function deleteVehicle(formData: FormData) {
   "use server";
 
-  const userId = await getValidUserId();
+  const currentUser = await getCurrentUser();
 
   const vehicleId = String(formData.get("vehicleId") ?? "").trim();
 
@@ -215,10 +307,15 @@ async function deleteVehicle(formData: FormData) {
   }
 
   const vehicle = await prisma.vehicle.findFirst({
-    where: {
-      id: vehicleId,
-      userId,
-    },
+    where:
+      currentUser.role === "ADMIN"
+        ? {
+            id: vehicleId,
+          }
+        : {
+            id: vehicleId,
+            userId: currentUser.id,
+          },
   });
 
   if (!vehicle) {
@@ -259,13 +356,40 @@ async function deleteVehicle(formData: FormData) {
 export default async function VehiclesPage({ searchParams }: Props) {
   const { success, error, mode, editId } = await searchParams;
 
-  const userId = await getValidUserId();
+  const currentUser = await getCurrentUser();
+  const isAdmin = currentUser.role === "ADMIN";
+
+  const customers = isAdmin
+    ? await prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+        orderBy: [
+          {
+            name: "asc",
+          },
+          {
+            email: "asc",
+          },
+        ],
+      })
+    : [];
 
   const vehicles = await prisma.vehicle.findMany({
-    where: {
-      userId,
-    },
+    where: isAdmin
+      ? {}
+      : {
+          userId: currentUser.id,
+        },
     include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
       userPlans: {
         include: {
           planPackage: true,
@@ -298,6 +422,12 @@ export default async function VehiclesPage({ searchParams }: Props) {
   const isCreating = mode === "new";
   const showForm = isCreating || !!editingVehicle;
 
+  const selectedOwnerId = editingVehicle?.userId ?? currentUser.id;
+
+  const selectedOwner = isAdmin
+    ? customers.find((customer) => customer.id === selectedOwnerId)
+    : currentUser;
+
   const successMessage =
     success === "created"
       ? "Veículo cadastrado com sucesso."
@@ -313,12 +443,16 @@ export default async function VehiclesPage({ searchParams }: Props) {
       : error === "invalid-mileage"
         ? "Informe uma quilometragem válida."
         : error === "invalid-year"
-          ? "Informe um ano válido."
-          : error === "not-found"
-            ? "Veículo não encontrado."
-            : error === "vehicle-linked"
-              ? "Este veículo já está vinculado a um plano ou agendamento e não pode ser removido."
-              : "";
+          ? `Informe um ano entre ${MIN_VEHICLE_YEAR} e ${MAX_VEHICLE_YEAR}.`
+          : error === "owner-required"
+            ? "Selecione o cliente dono do veículo."
+            : error === "owner-not-found"
+              ? "Cliente não encontrado."
+              : error === "not-found"
+                ? "Veículo não encontrado."
+                : error === "vehicle-linked"
+                  ? "Este veículo já está vinculado a um plano ou agendamento e não pode ser removido."
+                  : "";
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -327,8 +461,9 @@ export default async function VehiclesPage({ searchParams }: Props) {
           <h1 className="text-4xl font-bold">Meus veículos</h1>
 
           <p className="mt-2 text-white/90">
-            Cadastre seus veículos para acompanhar revisões por quilometragem e
-            tempo
+            {isAdmin
+              ? "Acompanhe todos os veículos cadastrados e seus respectivos clientes"
+              : "Cadastre seus veículos para acompanhar revisões por quilometragem e tempo"}
           </p>
         </div>
       </section>
@@ -353,7 +488,9 @@ export default async function VehiclesPage({ searchParams }: Props) {
             </h2>
 
             <p className="mt-1 text-sm text-gray-600">
-              Gerencie os veículos vinculados à sua conta.
+              {isAdmin
+                ? "Visualize todos os veículos e identifique o cliente responsável."
+                : "Gerencie os veículos vinculados à sua conta."}
             </p>
           </div>
 
@@ -384,6 +521,20 @@ export default async function VehiclesPage({ searchParams }: Props) {
               Essas informações serão usadas para planejar as próximas revisões.
             </p>
 
+            {selectedOwner ? (
+              <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                <p className="font-semibold">Cliente vinculado</p>
+
+                <p className="mt-1">
+                  Este veículo será vinculado a{" "}
+                  <span className="font-bold">
+                    {selectedOwner.name ?? selectedOwner.email}
+                  </span>
+                  .
+                </p>
+              </div>
+            ) : null}
+
             <form
               action={editingVehicle ? updateVehicle : createVehicle}
               className="mt-6 grid gap-4 md:grid-cols-2"
@@ -394,6 +545,31 @@ export default async function VehiclesPage({ searchParams }: Props) {
                   name="vehicleId"
                   value={editingVehicle.id}
                 />
+              ) : null}
+
+              {isAdmin ? (
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-semibold text-gray-700">
+                    Cliente dono do veículo
+                  </label>
+
+                  <select
+                    name="ownerUserId"
+                    defaultValue={selectedOwnerId}
+                    required
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
+                  >
+                    <option value="">Selecione o cliente</option>
+
+                    {customers.map((customer) => (
+                      <option key={customer.id} value={customer.id}>
+                        {customer.name
+                          ? `${customer.name} - ${customer.email}`
+                          : customer.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               ) : null}
 
               <div>
@@ -428,13 +604,19 @@ export default async function VehiclesPage({ searchParams }: Props) {
                   Ano
                 </label>
 
-                <input
+                <select
                   name="year"
-                  type="number"
                   defaultValue={editingVehicle?.year ?? ""}
-                  placeholder="Ex: 2016"
                   className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-gray-900"
-                />
+                >
+                  <option value="">Selecione o ano</option>
+
+                  {VEHICLE_YEARS.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -518,8 +700,9 @@ export default async function VehiclesPage({ searchParams }: Props) {
             </h2>
 
             <p className="mt-2 text-gray-600">
-              Cadastre seu primeiro veículo para começar a planejar suas
-              revisões.
+              {isAdmin
+                ? "Nenhum cliente possui veículo cadastrado no momento."
+                : "Cadastre seu primeiro veículo para começar a planejar suas revisões."}
             </p>
 
             <Link
@@ -531,7 +714,7 @@ export default async function VehiclesPage({ searchParams }: Props) {
           </div>
         ) : (
           <div className="space-y-5">
-            {vehicles.map((vehicle) => {
+            {vehicles.map((vehicle, index) => {
               const currentPlan = vehicle.userPlans[0];
               const vehicleImage = getVehicleImage(vehicle);
 
@@ -540,14 +723,15 @@ export default async function VehiclesPage({ searchParams }: Props) {
                   key={vehicle.id}
                   className="rounded-2xl bg-white p-6 shadow-sm"
                 >
-                  <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
-                    <div className="overflow-hidden rounded-2xl bg-gray-100">
+                  <div className="grid gap-6 lg:grid-cols-[170px_1fr]">
+                    <div className="flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-white p-3 ring-1 ring-gray-100">
                       <Image
                         src={vehicleImage}
                         alt={`${vehicle.brand} ${vehicle.model}`}
-                        width={440}
-                        height={280}
-                        className="h-44 w-full object-cover"
+                        width={320}
+                        height={200}
+                        priority={index === 0}
+                        className="max-h-full w-full object-contain"
                       />
                     </div>
 
@@ -561,6 +745,13 @@ export default async function VehiclesPage({ searchParams }: Props) {
                           <h2 className="mt-1 text-2xl font-bold text-gray-900">
                             {vehicle.brand} {vehicle.model}
                           </h2>
+
+                          <p className="mt-1 text-sm text-gray-500">
+                            Cliente:{" "}
+                            <span className="font-semibold text-gray-700">
+                              {vehicle.user.name ?? vehicle.user.email}
+                            </span>
+                          </p>
 
                           <div className="mt-3 flex flex-wrap gap-2">
                             {vehicle.year ? (
