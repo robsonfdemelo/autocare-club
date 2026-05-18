@@ -41,6 +41,7 @@ export type VehicleMinAggregateOutputType = {
   userId: string | null
   brand: string | null
   model: string | null
+  imageUrl: string | null
   year: number | null
   plate: string | null
   currentMileage: number | null
@@ -55,6 +56,7 @@ export type VehicleMaxAggregateOutputType = {
   userId: string | null
   brand: string | null
   model: string | null
+  imageUrl: string | null
   year: number | null
   plate: string | null
   currentMileage: number | null
@@ -69,6 +71,7 @@ export type VehicleCountAggregateOutputType = {
   userId: number
   brand: number
   model: number
+  imageUrl: number
   year: number
   plate: number
   currentMileage: number
@@ -95,6 +98,7 @@ export type VehicleMinAggregateInputType = {
   userId?: true
   brand?: true
   model?: true
+  imageUrl?: true
   year?: true
   plate?: true
   currentMileage?: true
@@ -109,6 +113,7 @@ export type VehicleMaxAggregateInputType = {
   userId?: true
   brand?: true
   model?: true
+  imageUrl?: true
   year?: true
   plate?: true
   currentMileage?: true
@@ -123,6 +128,7 @@ export type VehicleCountAggregateInputType = {
   userId?: true
   brand?: true
   model?: true
+  imageUrl?: true
   year?: true
   plate?: true
   currentMileage?: true
@@ -224,6 +230,7 @@ export type VehicleGroupByOutputType = {
   userId: string
   brand: string
   model: string
+  imageUrl: string | null
   year: number | null
   plate: string | null
   currentMileage: number
@@ -261,6 +268,7 @@ export type VehicleWhereInput = {
   userId?: Prisma.StringFilter<"Vehicle"> | string
   brand?: Prisma.StringFilter<"Vehicle"> | string
   model?: Prisma.StringFilter<"Vehicle"> | string
+  imageUrl?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   year?: Prisma.IntNullableFilter<"Vehicle"> | number | null
   plate?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   currentMileage?: Prisma.IntFilter<"Vehicle"> | number
@@ -278,6 +286,7 @@ export type VehicleOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   year?: Prisma.SortOrderInput | Prisma.SortOrder
   plate?: Prisma.SortOrderInput | Prisma.SortOrder
   currentMileage?: Prisma.SortOrder
@@ -298,6 +307,7 @@ export type VehicleWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"Vehicle"> | string
   brand?: Prisma.StringFilter<"Vehicle"> | string
   model?: Prisma.StringFilter<"Vehicle"> | string
+  imageUrl?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   year?: Prisma.IntNullableFilter<"Vehicle"> | number | null
   plate?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   currentMileage?: Prisma.IntFilter<"Vehicle"> | number
@@ -315,6 +325,7 @@ export type VehicleOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   year?: Prisma.SortOrderInput | Prisma.SortOrder
   plate?: Prisma.SortOrderInput | Prisma.SortOrder
   currentMileage?: Prisma.SortOrder
@@ -337,6 +348,7 @@ export type VehicleScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"Vehicle"> | string
   brand?: Prisma.StringWithAggregatesFilter<"Vehicle"> | string
   model?: Prisma.StringWithAggregatesFilter<"Vehicle"> | string
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"Vehicle"> | string | null
   year?: Prisma.IntNullableWithAggregatesFilter<"Vehicle"> | number | null
   plate?: Prisma.StringNullableWithAggregatesFilter<"Vehicle"> | string | null
   currentMileage?: Prisma.IntWithAggregatesFilter<"Vehicle"> | number
@@ -350,6 +362,7 @@ export type VehicleCreateInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -367,6 +380,7 @@ export type VehicleUncheckedCreateInput = {
   userId: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -382,6 +396,7 @@ export type VehicleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -399,6 +414,7 @@ export type VehicleUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -415,6 +431,7 @@ export type VehicleCreateManyInput = {
   userId: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -428,6 +445,7 @@ export type VehicleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -442,6 +460,7 @@ export type VehicleUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -471,6 +490,7 @@ export type VehicleCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   year?: Prisma.SortOrder
   plate?: Prisma.SortOrder
   currentMileage?: Prisma.SortOrder
@@ -490,6 +510,7 @@ export type VehicleMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   year?: Prisma.SortOrder
   plate?: Prisma.SortOrder
   currentMileage?: Prisma.SortOrder
@@ -504,6 +525,7 @@ export type VehicleMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   brand?: Prisma.SortOrder
   model?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrder
   year?: Prisma.SortOrder
   plate?: Prisma.SortOrder
   currentMileage?: Prisma.SortOrder
@@ -596,6 +618,7 @@ export type VehicleCreateWithoutUserInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -611,6 +634,7 @@ export type VehicleUncheckedCreateWithoutUserInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -656,6 +680,7 @@ export type VehicleScalarWhereInput = {
   userId?: Prisma.StringFilter<"Vehicle"> | string
   brand?: Prisma.StringFilter<"Vehicle"> | string
   model?: Prisma.StringFilter<"Vehicle"> | string
+  imageUrl?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   year?: Prisma.IntNullableFilter<"Vehicle"> | number | null
   plate?: Prisma.StringNullableFilter<"Vehicle"> | string | null
   currentMileage?: Prisma.IntFilter<"Vehicle"> | number
@@ -669,6 +694,7 @@ export type VehicleCreateWithoutAppointmentsInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -685,6 +711,7 @@ export type VehicleUncheckedCreateWithoutAppointmentsInput = {
   userId: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -715,6 +742,7 @@ export type VehicleUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -731,6 +759,7 @@ export type VehicleUncheckedUpdateWithoutAppointmentsInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -745,6 +774,7 @@ export type VehicleCreateWithoutUserPlansInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -761,6 +791,7 @@ export type VehicleUncheckedCreateWithoutUserPlansInput = {
   userId: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -791,6 +822,7 @@ export type VehicleUpdateWithoutUserPlansInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -807,6 +839,7 @@ export type VehicleUncheckedUpdateWithoutUserPlansInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -821,6 +854,7 @@ export type VehicleCreateManyUserInput = {
   id?: string
   brand: string
   model: string
+  imageUrl?: string | null
   year?: number | null
   plate?: string | null
   currentMileage: number
@@ -834,6 +868,7 @@ export type VehicleUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -849,6 +884,7 @@ export type VehicleUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -864,6 +900,7 @@ export type VehicleUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   brand?: Prisma.StringFieldUpdateOperationsInput | string
   model?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   year?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   plate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   currentMileage?: Prisma.IntFieldUpdateOperationsInput | number
@@ -918,6 +955,7 @@ export type VehicleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   userId?: boolean
   brand?: boolean
   model?: boolean
+  imageUrl?: boolean
   year?: boolean
   plate?: boolean
   currentMileage?: boolean
@@ -936,6 +974,7 @@ export type VehicleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   brand?: boolean
   model?: boolean
+  imageUrl?: boolean
   year?: boolean
   plate?: boolean
   currentMileage?: boolean
@@ -951,6 +990,7 @@ export type VehicleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   userId?: boolean
   brand?: boolean
   model?: boolean
+  imageUrl?: boolean
   year?: boolean
   plate?: boolean
   currentMileage?: boolean
@@ -966,6 +1006,7 @@ export type VehicleSelectScalar = {
   userId?: boolean
   brand?: boolean
   model?: boolean
+  imageUrl?: boolean
   year?: boolean
   plate?: boolean
   currentMileage?: boolean
@@ -975,7 +1016,7 @@ export type VehicleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type VehicleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "brand" | "model" | "year" | "plate" | "currentMileage" | "purchaseDate" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["vehicle"]>
+export type VehicleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "brand" | "model" | "imageUrl" | "year" | "plate" | "currentMileage" | "purchaseDate" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["vehicle"]>
 export type VehicleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   appointments?: boolean | Prisma.Vehicle$appointmentsArgs<ExtArgs>
@@ -1001,6 +1042,7 @@ export type $VehiclePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     userId: string
     brand: string
     model: string
+    imageUrl: string | null
     year: number | null
     plate: string | null
     currentMileage: number
@@ -1438,6 +1480,7 @@ export interface VehicleFieldRefs {
   readonly userId: Prisma.FieldRef<"Vehicle", 'String'>
   readonly brand: Prisma.FieldRef<"Vehicle", 'String'>
   readonly model: Prisma.FieldRef<"Vehicle", 'String'>
+  readonly imageUrl: Prisma.FieldRef<"Vehicle", 'String'>
   readonly year: Prisma.FieldRef<"Vehicle", 'Int'>
   readonly plate: Prisma.FieldRef<"Vehicle", 'String'>
   readonly currentMileage: Prisma.FieldRef<"Vehicle", 'Int'>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 
@@ -9,10 +10,17 @@ export default async function Header() {
 
   return (
     <header className="border-b border-gray-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between md:px-6">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-lg font-bold text-[#B11226]">
-            myRiseCare
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo-myrisecare.jpeg"
+              alt="myRiseCare"
+              width={190}
+              height={55}
+              priority
+              className="h-12 w-auto object-contain"
+            />
           </Link>
 
           {session?.user ? (

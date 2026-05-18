@@ -210,6 +210,7 @@ export const VehicleScalarFieldEnum = {
   userId: 'userId',
   brand: 'brand',
   model: 'model',
+  imageUrl: 'imageUrl',
   year: 'year',
   plate: 'plate',
   currentMileage: 'currentMileage',
