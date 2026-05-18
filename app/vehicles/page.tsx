@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -22,8 +23,50 @@ function formatDate(date?: Date | null) {
   return new Date(date).toLocaleDateString("pt-BR");
 }
 
+function formatDateInput(date?: Date | null) {
+  if (!date) {
+    return "";
+  }
+
+  return new Date(date).toISOString().split("T")[0];
+}
+
 function formatMileage(value: number) {
   return `${value.toLocaleString("pt-BR")} km`;
+}
+
+function getVehicleImage(vehicle: { brand: string; model: string }) {
+  const text = `${vehicle.brand} ${vehicle.model}`.toLowerCase();
+
+  if (text.includes("accord")) {
+    return "/honda_accord.jpg";
+  }
+
+  if (text.includes("city")) {
+    return "/honda_city.jpg";
+  }
+
+  if (text.includes("civic") || text.includes("lxr")) {
+    return "/honda_civic.jpg";
+  }
+
+  if (text.includes("crv") || text.includes("cr-v")) {
+    return "/honda_crv.jpg";
+  }
+
+  if (text.includes("fit")) {
+    return "/honda_fit.jpg";
+  }
+
+  if (text.includes("hrv") || text.includes("hr-v")) {
+    return "/honda_hrv.jpg";
+  }
+
+  if (text.includes("wrv") || text.includes("wr-v")) {
+    return "/honda_wrv.jpg";
+  }
+
+  return "/honda_civic.jpg";
 }
 
 async function getValidUserId() {
@@ -54,7 +97,9 @@ async function createVehicle(formData: FormData) {
   const brand = String(formData.get("brand") ?? "").trim();
   const model = String(formData.get("model") ?? "").trim();
   const yearValue = String(formData.get("year") ?? "").trim();
-  const plate = String(formData.get("plate") ?? "").trim().toUpperCase();
+  const plate = String(formData.get("plate") ?? "")
+    .trim()
+    .toUpperCase();
   const currentMileageValue = String(
     formData.get("currentMileage") ?? "",
   ).trim();
@@ -101,7 +146,9 @@ async function updateVehicle(formData: FormData) {
   const brand = String(formData.get("brand") ?? "").trim();
   const model = String(formData.get("model") ?? "").trim();
   const yearValue = String(formData.get("year") ?? "").trim();
-  const plate = String(formData.get("plate") ?? "").trim().toUpperCase();
+  const plate = String(formData.get("plate") ?? "")
+    .trim()
+    .toUpperCase();
   const currentMileageValue = String(
     formData.get("currentMileage") ?? "",
   ).trim();
@@ -207,14 +254,6 @@ async function deleteVehicle(formData: FormData) {
   });
 
   redirect("/vehicles?success=deleted");
-}
-
-function formatDateInput(date?: Date | null) {
-  if (!date) {
-    return "";
-  }
-
-  return new Date(date).toISOString().split("T")[0];
 }
 
 export default async function VehiclesPage({ searchParams }: Props) {
@@ -494,156 +533,175 @@ export default async function VehiclesPage({ searchParams }: Props) {
           <div className="space-y-5">
             {vehicles.map((vehicle) => {
               const currentPlan = vehicle.userPlans[0];
+              const vehicleImage = getVehicleImage(vehicle);
 
               return (
                 <article
                   key={vehicle.id}
                   className="rounded-2xl bg-white p-6 shadow-sm"
                 >
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
+                    <div className="overflow-hidden rounded-2xl bg-gray-100">
+                      <Image
+                        src={vehicleImage}
+                        alt={`${vehicle.brand} ${vehicle.model}`}
+                        width={440}
+                        height={280}
+                        className="h-44 w-full object-cover"
+                      />
+                    </div>
+
                     <div>
-                      <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                        Veículo
-                      </p>
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div>
+                          <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                            Veículo
+                          </p>
 
-                      <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                        {vehicle.brand} {vehicle.model}
-                      </h2>
+                          <h2 className="mt-1 text-2xl font-bold text-gray-900">
+                            {vehicle.brand} {vehicle.model}
+                          </h2>
 
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {vehicle.year ? (
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            Ano {vehicle.year}
-                          </span>
-                        ) : null}
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {vehicle.year ? (
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                                Ano {vehicle.year}
+                              </span>
+                            ) : null}
 
-                        {vehicle.plate ? (
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            Placa {vehicle.plate}
-                          </span>
-                        ) : null}
+                            {vehicle.plate ? (
+                              <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                                Placa {vehicle.plate}
+                              </span>
+                            ) : null}
 
-                        {currentPlan ? (
-                          <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                            Plano vinculado
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
-                            Sem plano vinculado
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                            {currentPlan ? (
+                              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+                                Plano vinculado
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
+                                Sem plano vinculado
+                              </span>
+                            )}
+                          </div>
+                        </div>
 
-                    <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[360px]">
-                      <div className="rounded-xl bg-gray-50 p-4">
-                        <p className="text-xs text-gray-500">KM atual</p>
+                        <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[360px]">
+                          <div className="rounded-xl bg-gray-50 p-4">
+                            <p className="text-xs text-gray-500">KM atual</p>
 
-                        <p className="mt-1 text-xl font-bold text-gray-900">
-                          {formatMileage(vehicle.currentMileage)}
-                        </p>
-                      </div>
-
-                      <div className="rounded-xl bg-gray-50 p-4">
-                        <p className="text-xs text-gray-500">Data da compra</p>
-
-                        <p className="mt-1 text-xl font-bold text-gray-900">
-                          {formatDate(vehicle.purchaseDate)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {vehicle.notes ? (
-                    <div className="mt-5 rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs text-gray-500">Observações</p>
-
-                      <p className="mt-1 text-sm text-gray-700">
-                        {vehicle.notes}
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {currentPlan ? (
-                    <div className="mt-5 rounded-xl border border-gray-200 p-4">
-                      <p className="text-xs text-gray-500">Plano vinculado</p>
-
-                      <p className="mt-1 font-semibold text-gray-900">
-                        {currentPlan.planPackage.name}
-                      </p>
-
-                      <p className="mt-1 text-sm text-gray-600">
-                        KM inicial do plano:{" "}
-                        {currentPlan.initialMileage !== null &&
-                        currentPlan.initialMileage !== undefined
-                          ? formatMileage(currentPlan.initialMileage)
-                          : "-"}
-                      </p>
-                    </div>
-                  ) : null}
-
-                  {vehicle.appointments.length > 0 ? (
-                    <div className="mt-5 rounded-xl border border-gray-200 p-4">
-                      <h3 className="font-semibold text-gray-900">
-                        Últimos agendamentos
-                      </h3>
-
-                      <div className="mt-3 space-y-3">
-                        {vehicle.appointments.map((appointment) => (
-                          <div
-                            key={appointment.id}
-                            className="rounded-lg bg-gray-50 p-3 text-sm"
-                          >
-                            <p className="font-semibold text-gray-900">
-                              {appointment.revisionService.name}
-                            </p>
-
-                            <p className="text-gray-500">
-                              {appointment.workshop.name} •{" "}
-                              {formatDate(appointment.appointmentDate)}
+                            <p className="mt-1 text-xl font-bold text-gray-900">
+                              {formatMileage(vehicle.currentMileage)}
                             </p>
                           </div>
-                        ))}
+
+                          <div className="rounded-xl bg-gray-50 p-4">
+                            <p className="text-xs text-gray-500">
+                              Data da compra
+                            </p>
+
+                            <p className="mt-1 text-xl font-bold text-gray-900">
+                              {formatDate(vehicle.purchaseDate)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {vehicle.notes ? (
+                        <div className="mt-5 rounded-xl border border-gray-200 p-4">
+                          <p className="text-xs text-gray-500">Observações</p>
+
+                          <p className="mt-1 text-sm text-gray-700">
+                            {vehicle.notes}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      {currentPlan ? (
+                        <div className="mt-5 rounded-xl border border-gray-200 p-4">
+                          <p className="text-xs text-gray-500">
+                            Plano vinculado
+                          </p>
+
+                          <p className="mt-1 font-semibold text-gray-900">
+                            {currentPlan.planPackage.name}
+                          </p>
+
+                          <p className="mt-1 text-sm text-gray-600">
+                            KM inicial do plano:{" "}
+                            {currentPlan.initialMileage !== null &&
+                            currentPlan.initialMileage !== undefined
+                              ? formatMileage(currentPlan.initialMileage)
+                              : "-"}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      {vehicle.appointments.length > 0 ? (
+                        <div className="mt-5 rounded-xl border border-gray-200 p-4">
+                          <h3 className="font-semibold text-gray-900">
+                            Últimos agendamentos
+                          </h3>
+
+                          <div className="mt-3 space-y-3">
+                            {vehicle.appointments.map((appointment) => (
+                              <div
+                                key={appointment.id}
+                                className="rounded-lg bg-gray-50 p-3 text-sm"
+                              >
+                                <p className="font-semibold text-gray-900">
+                                  {appointment.revisionService.name}
+                                </p>
+
+                                <p className="text-gray-500">
+                                  {appointment.workshop.name} •{" "}
+                                  {formatDate(appointment.appointmentDate)}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <div className="mt-5 flex flex-wrap gap-3">
+                        <Link
+                          href={`/vehicles?editId=${vehicle.id}`}
+                          className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
+                        >
+                          Editar
+                        </Link>
+
+                        <Link
+                          href="/plans"
+                          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+                        >
+                          Ver planos
+                        </Link>
+
+                        <Link
+                          href="/workshops"
+                          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
+                        >
+                          Agendar revisão
+                        </Link>
+
+                        <form action={deleteVehicle}>
+                          <input
+                            type="hidden"
+                            name="vehicleId"
+                            value={vehicle.id}
+                          />
+
+                          <button
+                            type="submit"
+                            className="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
+                          >
+                            Excluir
+                          </button>
+                        </form>
                       </div>
                     </div>
-                  ) : null}
-
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    <Link
-                      href={`/vehicles?editId=${vehicle.id}`}
-                      className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-gray-800"
-                    >
-                      Editar
-                    </Link>
-
-                    <Link
-                      href="/plans"
-                      className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
-                    >
-                      Ver planos
-                    </Link>
-
-                    <Link
-                      href="/workshops"
-                      className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
-                    >
-                      Agendar revisão
-                    </Link>
-
-                    <form action={deleteVehicle}>
-                      <input
-                        type="hidden"
-                        name="vehicleId"
-                        value={vehicle.id}
-                      />
-
-                      <button
-                        type="submit"
-                        className="rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50"
-                      >
-                        Excluir
-                      </button>
-                    </form>
                   </div>
                 </article>
               );
